@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Multi-threading in .NET/taskMulth/.vs/taskMulth/v15
+/Multi-threading in .NET/taskMulth/1.ArrayOfTasks/bin/Debug
+/Multi-threading in .NET/taskMulth/1.ArrayOfTasks/obj/Debug
+/Multi-threading in .NET/taskMulth/2.ChainOfTasks/bin/Debug
+/Multi-threading in .NET/taskMulth/2.ChainOfTasks/obj/Debug
+/Multi-threading in .NET/taskMulth/3.ParallelMatricesMultiplication/obj/Debug

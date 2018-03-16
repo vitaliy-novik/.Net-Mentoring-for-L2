@@ -1,0 +1,53 @@
+﻿using System;
+using System.Threading.Tasks;
+
+namespace _1.ArrayOfTasks
+{
+	/// <summary>
+	/// 1. Write a program, which creates an array of 100 Tasks, runs them and wait all of them are not finished. 
+	/// Each Task should iterate from 1 to 1000 and print into the console the following string: 
+	/// “Task #0 – {iteration number}”.
+	/// </summary>
+	class Program
+	{
+		const int defaultTasksNumber = 500;
+
+
+		static void Main(string[] args)
+		{
+			Task[] tasks = CreateArrayOfTasks(defaultTasksNumber);
+			RunTasks(tasks);
+			Task.WaitAll(tasks);
+
+			Console.ReadKey();
+		}
+
+		static Task[] CreateArrayOfTasks(int tasksNumber)
+		{
+			Task[] tasks = new Task[tasksNumber];
+			for (int i = 0; i < tasksNumber; i++)
+			{
+				tasks[i] = new Task(Iterate, i);
+			}
+
+			return tasks;
+		}
+
+		static void RunTasks(Task[] tasks)
+		{
+			foreach (Task task in tasks)
+			{
+				task.Start();
+			}
+		}
+
+		static void Iterate(object taskState)
+		{
+			int taskNumber = (int) taskState;
+			for (int i = 1; i <= 1000; i++)
+			{
+				Console.WriteLine($"Task #{taskNumber} – {i}");
+			}
+		}
+	}
+}
