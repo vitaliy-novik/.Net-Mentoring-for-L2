@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.IO.Pipes;
 using System.Text;
 
@@ -6,6 +7,7 @@ namespace ConsolePipeServer
 {
 	class Program
 	{
+		static MessageStorage storage = new MessageStorage(5);
 		static void Main(string[] args)
 		{
 			ConversationWithTheClient();
@@ -24,19 +26,52 @@ namespace ConsolePipeServer
 				byte[] messageBytes = Encoding.UTF8.GetBytes("Enter your name ");
 				namedPipeServer.Write(messageBytes, 0, messageBytes.Length);
 
-				string response = ProcessSingleReceivedMessage(namedPipeServer);
-				Console.WriteLine("The client has responded: {0}", response);
-				while (response != "x")
+				//using (StreamWriter writer = new StreamWriter(namedPipeServer))
+				//{
+				//	writer.WriteLine("Enter your name ");
+				//	writer.Flush();
+				//}
+
+				//namedPipeServer.WaitForPipeDrain();
+
+				string clientName = ProcessSingleReceivedMessage(namedPipeServer);
+				Console.WriteLine($"[{clientName}] connected");
+				foreach (var item in storage.GetMessages())
+				{
+					string message = $"[{item.ClientName}, {item.Date.ToShortTimeString()}]: {item.Text}";
+					messageBytes = Encoding.UTF8.GetBytes(message);
+					namedPipeServer.Write(messageBytes, 0, messageBytes.Length);
+				}
+
+
+				while (clientName != "x")
 				{
 					Console.Write("Send a response from the server: ");
 					var message = Console.ReadLine();
 					messageBytes = Encoding.UTF8.GetBytes(message);
 					namedPipeServer.Write(messageBytes, 0, messageBytes.Length);
-					response = ProcessSingleReceivedMessage(namedPipeServer);
-					Console.WriteLine("The client is saying {0}", response);
+					clientName = ProcessSingleReceivedMessage(namedPipeServer);
+					Console.WriteLine("The client is saying {0}", clientName);
 				}
 
 				Console.WriteLine("The client has ended the conversation.");
+			}
+		}
+
+		static void SendMessage(PipeStream pipe, string message)
+		{
+			using (StreamWriter writer = new StreamWriter(pipe))
+			{
+				writer.WriteLine(message);
+				writer.Flush();
+			}
+		}
+
+		static string RecieveMessage(PipeStream pipe)
+		{
+			using (StreamReader reader = new StreamReader(pipe))
+			{
+				return(reader.ReadLine());
 			}
 		}
 

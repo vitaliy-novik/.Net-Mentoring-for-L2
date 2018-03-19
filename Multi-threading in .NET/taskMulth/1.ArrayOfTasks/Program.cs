@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace _1.ArrayOfTasks
@@ -10,14 +11,21 @@ namespace _1.ArrayOfTasks
 	/// </summary>
 	class Program
 	{
-		const int defaultTasksNumber = 500;
-
+		static List<int> tasksNumber = new List<int>()
+		{
+			100,
+			500,
+			1000
+		};
 
 		static void Main(string[] args)
 		{
-			Task[] tasks = CreateArrayOfTasks(defaultTasksNumber);
-			RunTasks(tasks);
-			Task.WaitAll(tasks);
+			foreach (int number in tasksNumber)
+			{
+				Task[] tasks = CreateArrayOfTasks(number);
+				RunTasks(tasks);
+				Task.WaitAll(tasks);
+			}
 
 			Console.ReadKey();
 		}
