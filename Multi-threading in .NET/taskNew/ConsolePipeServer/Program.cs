@@ -21,7 +21,7 @@ namespace ConsolePipeServer
 			{
 				Console.WriteLine("Server waiting for a connection...");
 				namedPipeServer.WaitForConnection();
-				byte[] messageBytes = Encoding.UTF8.GetBytes("Enter your name");
+				byte[] messageBytes = Encoding.UTF8.GetBytes("Enter your name ");
 				namedPipeServer.Write(messageBytes, 0, messageBytes.Length);
 
 				string response = ProcessSingleReceivedMessage(namedPipeServer);
@@ -29,7 +29,7 @@ namespace ConsolePipeServer
 				while (response != "x")
 				{
 					Console.Write("Send a response from the server: ");
-					message = Console.ReadLine();
+					var message = Console.ReadLine();
 					messageBytes = Encoding.UTF8.GetBytes(message);
 					namedPipeServer.Write(messageBytes, 0, messageBytes.Length);
 					response = ProcessSingleReceivedMessage(namedPipeServer);
@@ -47,7 +47,7 @@ namespace ConsolePipeServer
 			byte[] messageBuffer = new byte[5];
 			do
 			{
-				namedPipeServer..Read(messageBuffer, 0, messageBuffer.Length);
+				namedPipeServer.Read(messageBuffer, 0, messageBuffer.Length);
 				messageChunk = Encoding.UTF8.GetString(messageBuffer);
 				messageBuilder.Append(messageChunk);
 				messageBuffer = new byte[messageBuffer.Length];
