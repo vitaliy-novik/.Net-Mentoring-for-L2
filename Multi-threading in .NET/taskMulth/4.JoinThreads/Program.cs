@@ -12,15 +12,13 @@ namespace _4.JoinThreads
 	class Program
 	{
 		const int threadsNumber = 10;
-		static Semaphore semaphore = new Semaphore(2, 1);
+		static Semaphore semaphore = new Semaphore(0, 1);
 
 		static void Main(string[] args)
 		{
 			RunRecusiveThreadsWithJoin(threadsNumber);
 
 			RunRecursiveThreadsWithSemaphore(threadsNumber);
-
-			semaphore.WaitOne();
 
 			Console.ReadKey();
 		}
@@ -39,15 +37,17 @@ namespace _4.JoinThreads
 
 		static void RunRecursiveThreadsWithSemaphore(object threadState)
 		{
-			semaphore.WaitOne();
 			int counter = (int) threadState;
 			Console.WriteLine(--counter);
 			if (counter > 0)
 			{
 				ThreadPool.QueueUserWorkItem(RunRecursiveThreadsWithSemaphore, counter);
+			} else
+			{
+				semaphore.Release();
 			}
 
-			semaphore.Release();
+			semaphore.WaitOne();
 		}
 	}
 }
