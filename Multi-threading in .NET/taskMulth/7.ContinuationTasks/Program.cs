@@ -13,25 +13,28 @@ namespace _7.ContinuationTasks
 	/// </summary>
 	class Program
 	{
-		static void SuccessAction()
+		static CancellationTokenSource cancellationTokenSource;
+
+		static void SuccessAction(CancellationToken cancellationToken)
 		{
-			Console.WriteLine("SuccessAction");
-			Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
-			Thread.SpinWait(100000000);
+			Console.WriteLine($"SuccessAction started in: {Thread.CurrentThread.ManagedThreadId} thread");
+			if (cancellationToken.IsCancellationRequested)
+			{
+				Console.WriteLine("SuccessAction cancelled");
+			}
+
+			Console.WriteLine("SuccessAction finished");
 		}
 
 		static void FailedAction()
 		{
-			Console.WriteLine("FailedAction");
-			Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
-			Thread.SpinWait(50000000);
+			Console.WriteLine($"FailedAction started in: {Thread.CurrentThread.ManagedThreadId} thread");
 			throw new Exception();
 		}
 
 		static void ContinuationAction(Task prevTask)
 		{
-			Console.WriteLine("ContinuationAction");
-			Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
+			Console.WriteLine($"ContinuationAction started in: {Thread.CurrentThread.ManagedThreadId} thread");
 			Console.WriteLine(prevTask.Status.ToString());
 		}
 
@@ -51,8 +54,9 @@ namespace _7.ContinuationTasks
 		static void A()
 		{
 			Console.WriteLine("a.Continuation task should be executed regardless of the result of the parent task.");
+			cancellationTokenSource = new CancellationTokenSource();
 
-			Task.Run(() => SuccessAction())
+			Task.Run(() => SuccessAction(cancellationTokenSource.Token), cancellationTokenSource.Token)
 				.ContinueWith(ContinuationAction)
 				.Wait();
 
@@ -64,10 +68,11 @@ namespace _7.ContinuationTasks
 		static void B()
 		{
 			Console.WriteLine("b.Continuation task should be executed when the parent task finished without success.");
+			cancellationTokenSource = new CancellationTokenSource();
 
 			try
 			{
-				Task.Run(() => SuccessAction())
+				Task.Run(() => SuccessAction(cancellationTokenSource.Token), cancellationTokenSource.Token)
 					.ContinueWith(ContinuationAction, TaskContinuationOptions.NotOnRanToCompletion)
 					.Wait();
 			}
@@ -81,10 +86,11 @@ namespace _7.ContinuationTasks
 		static void C()
 		{
 			Console.WriteLine("c.Continuation task should be executed when the parent task would be finished with fail and parent task thread should be reused for continuation");
+			cancellationTokenSource = new CancellationTokenSource();
 
 			try
 			{
-				Task.Run(() => SuccessAction())
+				Task.Run(() => SuccessAction(cancellationTokenSource.Token), cancellationTokenSource.Token)
 					.ContinueWith(ContinuationAction, TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously)
 					.Wait();
 			}
@@ -98,21 +104,24 @@ namespace _7.ContinuationTasks
 		static void D()
 		{
 			Console.WriteLine("d.Continuation task should be executed outside of the thread pool when the parent task would be cancelled");
-			CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+			cancellationTokenSource = new CancellationTokenSource();
 
 			try
 			{
-				Task.Run(() => SuccessAction())
+				Task.Run(() => SuccessAction(cancellationTokenSource.Token))
 					.ContinueWith(ContinuationAction, TaskContinuationOptions.OnlyOnCanceled)
 					.Wait();
 			}
 			catch (AggregateException) { }
 
-			Task task = Task.Run(() => SuccessAction(), cancellationTokenSource.Token)
-				.ContinueWith(ContinuationAction, TaskContinuationOptions.OnlyOnCanceled | TaskContinuationOptions.LongRunning);
-			cancellationTokenSource.Cancel();
-
-			task.Wait();
+			try
+			{
+				Task task = Task.Run(() => SuccessAction(cancellationTokenSource.Token), cancellationTokenSource.Token)
+					.ContinueWith(ContinuationAction, TaskContinuationOptions.OnlyOnCanceled | TaskContinuationOptions.LongRunning);
+					cancellationTokenSource.Cancel();
+				task.Wait();
+			}
+			catch (AggregateException) { }
 		}
 	}
 }
