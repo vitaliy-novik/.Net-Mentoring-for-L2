@@ -1,14 +1,83 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO.Pipes;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ConsolePipeClient
 {
 	class Program
 	{
+		const string mainPipeName = "Main_Pipe";
+
 		static void Main(string[] args)
 		{
-			ConversationWithTheServer();
+			ConnectToMainPipe();
+		}
+
+		private static void ConnectToMainPipe()
+		{
+			using (NamedPipeClientStream namedPipeClient = new NamedPipeClientStream(
+				".",
+				mainPipeName,
+				PipeDirection.InOut))
+			{
+				namedPipeClient.Connect();
+				namedPipeClient.ReadMode = PipeTransmissionMode.Message;
+				string newConnectionName = ProcessSingleReceivedMessage(namedPipeClient);
+				Console.WriteLine($"New connection {newConnectionName}");
+				Reconnect(newConnectionName);
+			}
+		}
+
+		private static void Reconnect(string newConnectionName)
+		{
+			using (NamedPipeClientStream namedPipeClient = new NamedPipeClientStream(
+				".",
+				newConnectionName,
+				PipeDirection.InOut))
+			{
+				namedPipeClient.Connect();
+				namedPipeClient.ReadMode = PipeTransmissionMode.Message;
+				string firstMessage = ProcessSingleReceivedMessage(namedPipeClient);
+				Console.WriteLine(firstMessage);
+				StartSendingMessages(namedPipeClient);
+				StartListening(namedPipeClient);
+			}
+		}
+
+		private static void StartListening(NamedPipeClientStream namedPipeClient)
+		{
+			while (true)
+			{
+				Thread.Sleep(100 * 1000);
+			}
+		}
+
+		private static void StartSendingMessages(NamedPipeClientStream namedPipeClient)
+		{
+			ThreadPool.QueueUserWorkItem(state =>
+			{
+				NamedPipeClientStream stream = (NamedPipeClientStream)state;
+				Random randomizer = new Random();
+				while (true)
+				{
+					CancellationTokenSource cts = new CancellationTokenSource();
+					Task reader = Task.Run(() => ProcessSingleReceivedMessage(stream), cts.Token);
+					reader.Wait(randomizer.Next(10) * 1000);
+					string message = randomPhrases[randomizer.Next(19)];
+					SendMessage(stream, message);
+					Console.WriteLine($"Sending '{message}'");
+				}
+			}, namedPipeClient);
+		}
+
+		private static void SendMessage(PipeStream namedPipeServer, string message)
+		{
+			byte[] messageBytes = Encoding.UTF8.GetBytes(message);
+			namedPipeServer.Write(messageBytes, 0, messageBytes.Length);
+			namedPipeServer.Flush();
 		}
 
 		static void ConversationWithTheServer()
@@ -54,5 +123,29 @@ namespace ConsolePipeClient
 			while (!namedPipeClient.IsMessageComplete);
 			return messageBuilder.ToString();
 		}
+
+		static List<string> randomPhrases = new List<string>
+		{
+			"Like Father Like Son",
+			"Drawing a Blank",
+			"Dropping Like Flies",
+			"Roll With the Punches",
+			"Hear, Hear",
+			"Tough It Out",
+			"Right Off the Bat",
+			"High And Dry",
+			"Read 'Em and Weep",
+			"Keep On Truckin'",
+			"Not the Sharpest Tool in the Shed",
+			"Cry Over Spilt Milk",
+			"Wouldn't Harm a Fly",
+			"Hit Below The Belt",
+			"Right Out of the Gate",
+			"Jig Is Up",
+			"Birds of a Feather Flock Together",
+			"Money Doesn't Grow On Trees",
+			"Quick On the Draw",
+			"Long In The Tooth"
+		};
 	}
 }

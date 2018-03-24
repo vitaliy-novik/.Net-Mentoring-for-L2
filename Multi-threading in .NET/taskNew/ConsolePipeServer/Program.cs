@@ -1,16 +1,87 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipes;
 using System.Text;
+using System.Threading;
 
 namespace ConsolePipeServer
 {
 	class Program
 	{
 		static MessageStorage storage = new MessageStorage(5);
+		static List<string> connections = new List<string>();
+		const string mainPipeName = "Main_Pipe";
+
 		static void Main(string[] args)
 		{
-			ConversationWithTheClient();
+			StartServer();
+		}
+
+		private static void StartServer()
+		{
+			using (NamedPipeServerStream namedPipeServer = new NamedPipeServerStream(
+				mainPipeName,
+				PipeDirection.InOut,
+				1,
+				PipeTransmissionMode.Message))
+			{
+				while (true)
+				{
+					namedPipeServer.WaitForConnection();
+					Console.WriteLine("Client Connected");
+					string newConnectionName = GenerateConnectionName();
+					connections.Add(newConnectionName);
+					//string clientName = namedPipeServer.GetImpersonationUserName();
+					CreateNewConnectionForClient(newConnectionName);
+					SendMessage(namedPipeServer, newConnectionName);
+					namedPipeServer.Disconnect();
+				}
+			}
+		}
+
+		private static void CreateNewConnectionForClient(string newConnectionName)
+		{
+			ThreadPool.QueueUserWorkItem(StartConnection, newConnectionName);
+		}
+
+		private static void StartConnection(object state)
+		{
+			string connectionName = (string)state;
+			using (NamedPipeServerStream namedPipeServer = new NamedPipeServerStream(
+				connectionName,
+				PipeDirection.InOut,
+				1,
+				PipeTransmissionMode.Message))
+			{
+				namedPipeServer.WaitForConnection();
+				Console.WriteLine($"Redirected to {connectionName}");
+				SendMessage(namedPipeServer, "First Message");
+				while (true)
+				{
+					string message = ProcessSingleReceivedMessage(namedPipeServer);
+					Console.WriteLine(message);
+					BroadcastMessage(message);
+				}
+				
+			}
+		}
+
+		private static void BroadcastMessage(string message)
+		{
+			throw new NotImplementedException();
+		}
+
+		private static void SendMessage(NamedPipeServerStream namedPipeServer, string message)
+		{
+			byte[] messageBytes = Encoding.UTF8.GetBytes(message);
+			namedPipeServer.Write(messageBytes, 0, messageBytes.Length);
+			namedPipeServer.Flush();
+		}
+
+		private static string GenerateConnectionName()
+		{
+			return $"{mainPipeName}{connections.Count + 1}";
 		}
 
 		static void ConversationWithTheClient()

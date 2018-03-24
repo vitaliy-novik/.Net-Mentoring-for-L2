@@ -42,6 +42,9 @@ namespace _4.JoinThreads
 			if (counter > 0)
 			{
 				ThreadPool.QueueUserWorkItem(RunRecursiveThreadsWithSemaphore, counter);
+			} else
+			{
+				semaphore.Release();
 			}
 			else
 			{
