@@ -13,20 +13,20 @@ namespace _3.ParallelMatricesMultiplication
 
 		static void Main(string[] args)
 		{
-			int[,] matA = GenerateMatrix(800, 800);
-			int[,] matB = GenerateMatrix(800, 800);
+			int[,] matA = GenerateMatrix(1000, 1000);
+			int[,] matB = GenerateMatrix(1000, 1000);
 			int[,] res;
 
 			Stopwatch stopwatch = new Stopwatch();
 			stopwatch.Start();
 			res = MultiplySequentially(matA, matB);
 			stopwatch.Stop();
-			Console.WriteLine(stopwatch.ElapsedMilliseconds);
+			Console.WriteLine(stopwatch.ElapsedMilliseconds);// 10629
 
 			stopwatch.Restart();
 			res = MultiplyParallel(matA, matB);
 			stopwatch.Stop();
-			Console.WriteLine(stopwatch.ElapsedMilliseconds);
+			Console.WriteLine(stopwatch.ElapsedMilliseconds); // 428
 
 			Console.Read();
 		}

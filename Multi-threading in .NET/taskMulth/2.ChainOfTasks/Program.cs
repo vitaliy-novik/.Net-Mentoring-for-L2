@@ -18,7 +18,7 @@ namespace _2.ChainOfTasks
 
 		static void Main(string[] args)
 		{
-			Task.Run((Func<int[]>)CreateRandomArray)
+			Task.Run(() => CreateRandomArray())
 				.ContinueWith(task => MultiplyArray(task.Result))
 				.ContinueWith(task => SortArrayByAscending(task.Result))
 				.ContinueWith(task => CalculateAverage(task.Result));

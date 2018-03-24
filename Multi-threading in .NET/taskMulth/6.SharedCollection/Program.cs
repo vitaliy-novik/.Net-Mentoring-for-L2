@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace _6.SharedCollection
 {
@@ -19,12 +20,33 @@ namespace _6.SharedCollection
 
 		static void Main(string[] args)
 		{
+			GoWithThreads();
+			GoWithThreadPool();
+			GoWithTasks();
+
+			Console.Read();
+		}
+
+		static void GoWithThreads()
+		{
 			Thread writer = new Thread(WriteToCollection);
 			Thread reader = new Thread(ReadCollection);
 			writer.Start();
 			reader.Start();
+		}
 
-			Console.Read();
+		static void GoWithThreadPool()
+		{
+			ThreadPool.QueueUserWorkItem(state => WriteToCollection());
+			ThreadPool.QueueUserWorkItem(state => ReadCollection());
+		}
+
+		static void GoWithTasks()
+		{
+			Task writing = new Task(() => WriteToCollection());
+			Task reading = new Task(() => ReadCollection());
+
+			Task.WaitAll(writing, reading);
 		}
 
 		static void WriteToCollection()

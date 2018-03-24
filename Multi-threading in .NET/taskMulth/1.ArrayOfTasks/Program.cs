@@ -22,7 +22,7 @@ namespace _1.ArrayOfTasks
 		{
 			foreach (int number in tasksNumber)
 			{
-				Task[] tasks = CreateArrayOfTasks(number);
+				Task[] tasks = CreateArrayOfTasks(number); // < 1ms
 				RunTasks(tasks);
 				Task.WaitAll(tasks);
 			}
