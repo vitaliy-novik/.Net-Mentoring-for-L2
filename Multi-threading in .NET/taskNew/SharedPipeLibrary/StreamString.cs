@@ -18,11 +18,19 @@ namespace SharedPipeLibrary
 		public string ReadString()
 		{
 			int len = 0;
-
-			len = pipeStream.ReadByte() * 256;
-			len += pipeStream.ReadByte();
-			byte[] inBuffer = new byte[len];
-			pipeStream.Read(inBuffer, 0, len);
+			byte[] inBuffer;
+			try
+			{
+				len = pipeStream.ReadByte() * 256;
+				len += pipeStream.ReadByte();
+				inBuffer = new byte[len];
+				pipeStream.Read(inBuffer, 0, len);
+			}
+			catch (Exception ex)
+			{ 
+				throw;
+			}
+			
 
 			return streamEncoding.GetString(inBuffer);
 		}
@@ -35,10 +43,18 @@ namespace SharedPipeLibrary
 			{
 				len = (int)UInt16.MaxValue;
 			}
-			pipeStream.WriteByte((byte)(len / 256));
-			pipeStream.WriteByte((byte)(len & 255));
-			pipeStream.Write(outBuffer, 0, len);
-			pipeStream.Flush();
+			try
+			{
+				pipeStream.WriteByte((byte)(len / 256));
+				pipeStream.WriteByte((byte)(len & 255));
+				pipeStream.Write(outBuffer, 0, len);
+				pipeStream.Flush();
+			}
+			catch (Exception ex)
+			{
+
+				throw;
+			}
 
 			return outBuffer.Length + 2;
 		}

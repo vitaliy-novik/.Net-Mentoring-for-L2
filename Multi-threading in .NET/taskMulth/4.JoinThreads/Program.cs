@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace _4.JoinThreads
@@ -13,6 +14,7 @@ namespace _4.JoinThreads
 	{
 		const int threadsNumber = 10;
 		static Semaphore semaphore = new Semaphore(0, 1);
+		static List<int> list = new List<int>();
 
 		static void Main(string[] args)
 		{
@@ -43,10 +45,6 @@ namespace _4.JoinThreads
 			{
 				ThreadPool.QueueUserWorkItem(RunRecursiveThreadsWithSemaphore, counter);
 			} else
-			{
-				semaphore.Release();
-			}
-			else
 			{
 				semaphore.Release();
 			}

@@ -26,7 +26,6 @@ namespace _2.DownloadManager
 		{
 			string input = this.urlTextBox.Text;
 			string[] urls = input.Split(' ');
-			
 
 			urlTextBox.Clear();
 

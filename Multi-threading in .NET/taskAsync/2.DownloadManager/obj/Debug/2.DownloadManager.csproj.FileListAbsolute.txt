@@ -6,3 +6,12 @@ C:\Users\NotePad\source\repos\.Net-Mentoring-for-L2\Multi-threading in .NET\task
 C:\Users\NotePad\source\repos\.Net-Mentoring-for-L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\2.DownloadManager.csproj.GenerateResource.Cache
 C:\Users\NotePad\source\repos\.Net-Mentoring-for-L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\2.DownloadManager.exe
 C:\Users\NotePad\source\repos\.Net-Mentoring-for-L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\2.DownloadManager.pdb
+D:\.Net Mentoring for L2\Multi-threading in .NET\taskAsync\2.DownloadManager\bin\Debug\2.DownloadManager.exe.config
+D:\.Net Mentoring for L2\Multi-threading in .NET\taskAsync\2.DownloadManager\bin\Debug\2.DownloadManager.exe
+D:\.Net Mentoring for L2\Multi-threading in .NET\taskAsync\2.DownloadManager\bin\Debug\2.DownloadManager.pdb
+D:\.Net Mentoring for L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\_2.DownloadManager.DownloadManager.resources
+D:\.Net Mentoring for L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\_2.DownloadManager.Properties.Resources.resources
+D:\.Net Mentoring for L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\2.DownloadManager.csproj.GenerateResource.Cache
+D:\.Net Mentoring for L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\2.DownloadManager.csproj.CoreCompileInputs.cache
+D:\.Net Mentoring for L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\2.DownloadManager.exe
+D:\.Net Mentoring for L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\2.DownloadManager.pdb

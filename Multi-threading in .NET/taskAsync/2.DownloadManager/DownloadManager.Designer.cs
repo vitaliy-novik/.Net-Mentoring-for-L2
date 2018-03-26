@@ -41,27 +41,30 @@
 			// urlTextBox
 			// 
 			this.urlTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.urlTextBox.Location = new System.Drawing.Point(61, 17);
+			this.urlTextBox.Location = new System.Drawing.Point(41, 11);
+			this.urlTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
 			this.urlTextBox.Name = "urlTextBox";
-			this.urlTextBox.Size = new System.Drawing.Size(865, 26);
+			this.urlTextBox.Size = new System.Drawing.Size(578, 20);
 			this.urlTextBox.TabIndex = 0;
 			// 
 			// label1
 			// 
 			this.label1.AutoSize = true;
 			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.label1.Location = new System.Drawing.Point(13, 17);
+			this.label1.Location = new System.Drawing.Point(9, 11);
+			this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(42, 20);
+			this.label1.Size = new System.Drawing.Size(29, 13);
 			this.label1.TabIndex = 1;
 			this.label1.Text = "URL";
 			// 
 			// downloadButton
 			// 
 			this.downloadButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.downloadButton.Location = new System.Drawing.Point(932, 17);
+			this.downloadButton.Location = new System.Drawing.Point(621, 11);
+			this.downloadButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
 			this.downloadButton.Name = "downloadButton";
-			this.downloadButton.Size = new System.Drawing.Size(150, 26);
+			this.downloadButton.Size = new System.Drawing.Size(100, 20);
 			this.downloadButton.TabIndex = 2;
 			this.downloadButton.Text = "Download";
 			this.downloadButton.UseVisualStyleBackColor = true;
@@ -76,11 +79,12 @@
             this.Url,
             this.Status,
             this.Cancel});
-			this.downloadsTable.Location = new System.Drawing.Point(17, 64);
+			this.downloadsTable.Location = new System.Drawing.Point(11, 42);
+			this.downloadsTable.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
 			this.downloadsTable.Name = "downloadsTable";
 			this.downloadsTable.ReadOnly = true;
 			this.downloadsTable.RowTemplate.Height = 28;
-			this.downloadsTable.Size = new System.Drawing.Size(1082, 597);
+			this.downloadsTable.Size = new System.Drawing.Size(721, 388);
 			this.downloadsTable.TabIndex = 3;
 			this.downloadsTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.downloadsTable_CellContentClick);
 			// 
@@ -90,7 +94,7 @@
 			this.Url.HeaderText = "Url";
 			this.Url.Name = "Url";
 			this.Url.ReadOnly = true;
-			this.Url.Width = 65;
+			this.Url.Width = 45;
 			// 
 			// Status
 			// 
@@ -106,13 +110,14 @@
 			// 
 			// DownloadManager
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1116, 712);
+			this.ClientSize = new System.Drawing.Size(744, 463);
 			this.Controls.Add(this.downloadsTable);
 			this.Controls.Add(this.downloadButton);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.urlTextBox);
+			this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
 			this.Name = "DownloadManager";
 			this.Text = "Download Manager";
 			((System.ComponentModel.ISupportInitialize)(this.downloadsTable)).EndInit();

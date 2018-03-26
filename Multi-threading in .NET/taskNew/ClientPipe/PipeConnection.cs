@@ -6,29 +6,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ServerPipe
+namespace ClientPipe
 {
-	internal class PipeConnection
+	class PipeConnection
 	{
 		protected string connectionName;
 		protected StreamString streamString;
-		protected NamedPipeServerStream namedPipeServerStream;
+		protected NamedPipeClientStream namedPipeClientStream;
 
 		public PipeConnection(string connectionName)
 		{
 			this.connectionName = connectionName;
-			this.namedPipeServerStream = new NamedPipeServerStream(
+			this.namedPipeClientStream = new NamedPipeClientStream(
+				".",
 				connectionName,
 				PipeDirection.InOut,
-				1,
-				PipeTransmissionMode.Message,
 				PipeOptions.Asynchronous);
-			this.streamString = new StreamString(namedPipeServerStream);
+			
+			this.streamString = new StreamString(namedPipeClientStream);
 		}
 
 		public void StartConnection()
 		{
-			namedPipeServerStream.WaitForConnection();
+			namedPipeClientStream.Connect();
+			this.namedPipeClientStream.ReadMode = PipeTransmissionMode.Message;
 		}
 
 		public void SendMessage(string message)
@@ -38,17 +39,12 @@ namespace ServerPipe
 
 		internal void Disconnect()
 		{
-			namedPipeServerStream.Disconnect();
+			namedPipeClientStream.Close();
 		}
 
 		internal string WaitMessage()
 		{
 			return streamString.ReadString();
-		}
-
-		internal string GetClientName()
-		{
-			return namedPipeServerStream.GetImpersonationUserName();
 		}
 	}
 }
