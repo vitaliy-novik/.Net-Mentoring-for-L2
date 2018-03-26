@@ -1,0 +1,8 @@
+C:\Users\NotePad\source\repos\.Net-Mentoring-for-L2\Multi-threading in .NET\taskAsync\2.DownloadManager\bin\Debug\2.DownloadManager.exe.config
+C:\Users\NotePad\source\repos\.Net-Mentoring-for-L2\Multi-threading in .NET\taskAsync\2.DownloadManager\bin\Debug\2.DownloadManager.exe
+C:\Users\NotePad\source\repos\.Net-Mentoring-for-L2\Multi-threading in .NET\taskAsync\2.DownloadManager\bin\Debug\2.DownloadManager.pdb
+C:\Users\NotePad\source\repos\.Net-Mentoring-for-L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\_2.DownloadManager.DownloadManager.resources
+C:\Users\NotePad\source\repos\.Net-Mentoring-for-L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\_2.DownloadManager.Properties.Resources.resources
+C:\Users\NotePad\source\repos\.Net-Mentoring-for-L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\2.DownloadManager.csproj.GenerateResource.Cache
+C:\Users\NotePad\source\repos\.Net-Mentoring-for-L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\2.DownloadManager.exe
+C:\Users\NotePad\source\repos\.Net-Mentoring-for-L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\2.DownloadManager.pdb

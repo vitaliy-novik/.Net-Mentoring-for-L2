@@ -21,6 +21,7 @@ namespace _7.ContinuationTasks
 			if (cancellationToken.IsCancellationRequested)
 			{
 				Console.WriteLine("SuccessAction cancelled");
+				return;
 			}
 
 			Console.WriteLine("SuccessAction finished");
