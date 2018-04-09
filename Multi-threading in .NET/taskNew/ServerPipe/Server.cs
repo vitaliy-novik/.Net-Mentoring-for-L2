@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -7,15 +8,15 @@ namespace ServerPipe
 	public class Server
 	{
 		private PipeConnection mainConnection;
-		private List<PipeConnection> connections;
+		private ConcurrentBag<PipeConnection> connections;
 		private const string mainPipeName = "Main_Pipe";
 		private MessageStorage messageStorage;
 
 		public Server()
 		{
-			connections = new List<PipeConnection>();
+			connections = new ConcurrentBag<PipeConnection>();
 			mainConnection = new PipeConnection(mainPipeName);
-			messageStorage = new MessageStorage(50);
+			messageStorage = new MessageStorage(10);
 		}
 
 		public void Start()

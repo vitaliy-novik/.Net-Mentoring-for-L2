@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -15,11 +16,15 @@ namespace _2.DownloadManager
 	public partial class DownloadManager : Form
 	{
 		List<Download> downloads;
+		HttpService httpService;
+		FileService fileService;
 
 		public DownloadManager()
 		{
 			InitializeComponent();
 			downloads = new List<Download>();
+			httpService = new HttpService();
+			fileService = new FileService();
 		}
 
 		private async void DownloadButton_Click(object sender, EventArgs e)
@@ -27,23 +32,24 @@ namespace _2.DownloadManager
 			string input = this.urlTextBox.Text;
 			string[] urls = input.Split(' ');
 
-			urlTextBox.Clear();
+			//urlTextBox.Clear();
 
 			foreach (var item in urls)
 			{
 				CancellationTokenSource cts = new CancellationTokenSource();
-				this.downloads.Add(new Download
+				Download download = new Download
 				{
 					Url = item,
-					Cts = cts
-				});
-				int rowNumber = this.downloadsTable.Rows.Add();
-				this.downloadsTable.Rows[rowNumber].Cells["Url"].Value = item;
-				this.downloadsTable.Rows[rowNumber].Cells["Status"].Value = "Downloading";
-				this.downloadsTable.Rows[rowNumber].Cells["Cancel"].Value = "Cancel";
+					Cts = cts,
+					Status = DownloadStatus.NotStarted
+				};
+				this.downloads.Add(download);
+				int rowNumber = AddRaw(download);
+				Stream stream;
 				try
 				{
-					int contentLength = await AccessTheWebAsync(item, cts.Token);
+					stream = await this.httpService.GetStreamAsync(item, cts.Token);
+					await fileService.SaveToFileAsync(stream, rowNumber.ToString());
 					this.downloadsTable.Rows[rowNumber].Cells["Status"].Value = "Succeed";
 				}
 				catch (OperationCanceledException)
@@ -58,6 +64,15 @@ namespace _2.DownloadManager
 
 		}
 
+		private int AddRaw(Download download)
+		{
+			int rowNumber = this.downloadsTable.Rows.Add();
+			this.downloadsTable.Rows[rowNumber].Cells["Url"].Value = download.Url;
+			this.downloadsTable.Rows[rowNumber].Cells["Status"].Value = "Downloading";
+			this.downloadsTable.Rows[rowNumber].Cells["Cancel"].Value = "Cancel";
+
+			return rowNumber;
+		}
 
 		private void downloadsTable_CellContentClick(object sender, DataGridViewCellEventArgs e)
 		{
