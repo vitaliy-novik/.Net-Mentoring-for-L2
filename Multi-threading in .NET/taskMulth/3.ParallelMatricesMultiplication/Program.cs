@@ -28,7 +28,7 @@ namespace _3.ParallelMatricesMultiplication
 			stopwatch.Stop();
 			Console.WriteLine(stopwatch.ElapsedMilliseconds); // 428
 
-			Console.Read();
+			Console.ReadKey();
 		}
 
 		static int[,] MultiplyParallel(int[,] matA, int[,] matB)

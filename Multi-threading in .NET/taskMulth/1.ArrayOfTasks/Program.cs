@@ -26,7 +26,9 @@ namespace _1.ArrayOfTasks
 				RunTasks(tasks);
 				Task.WaitAll(tasks);
 			}
-
+			// ~8 sec.
+			// ~28 sec.
+			// ~60 sec.
 			Console.ReadKey();
 		}
 

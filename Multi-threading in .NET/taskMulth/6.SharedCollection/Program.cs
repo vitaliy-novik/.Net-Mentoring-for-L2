@@ -24,7 +24,7 @@ namespace _6.SharedCollection
 			GoWithThreadPool();
 			GoWithTasks();
 
-			Console.Read();
+			Console.ReadKey();
 		}
 
 		static void GoWithThreads()
@@ -45,6 +45,8 @@ namespace _6.SharedCollection
 		{
 			Task writing = new Task(() => WriteToCollection());
 			Task reading = new Task(() => ReadCollection());
+			writing.Start();
+			reading.Start();
 
 			Task.WaitAll(writing, reading);
 		}

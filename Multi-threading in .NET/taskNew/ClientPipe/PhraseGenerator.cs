@@ -14,7 +14,7 @@ namespace ClientPipe
 
 		public string GetPhrase()
 		{
-			return randomPhrases[random.Next(randomPhrases.Count)];
+			return randomPhrases[random.Next(randomPhrases.Count) - 1];
 		}
 
 		static List<string> randomPhrases = new List<string>

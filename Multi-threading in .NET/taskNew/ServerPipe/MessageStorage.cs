@@ -5,19 +5,19 @@ namespace ServerPipe
 {
 	class MessageStorage
 	{
-		private int maxMessagesNumber;
+		private int capacity;
 		private ConcurrentQueue<Message> messageQueue;
 
 		public MessageStorage(int maxMessagesNumber)
 		{
 			messageQueue = new ConcurrentQueue<Message>();
-			this.maxMessagesNumber = maxMessagesNumber;
+			this.capacity = maxMessagesNumber;
 		}
 
 		public void Add(Message message)
 		{
 			messageQueue.Enqueue(message);
-			if (messageQueue.Count > maxMessagesNumber)
+			if (messageQueue.Count > capacity)
 			{
 				Message removal;
 				messageQueue.TryDequeue(out removal);

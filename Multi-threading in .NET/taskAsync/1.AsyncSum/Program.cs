@@ -11,7 +11,7 @@ namespace _1.AsyncSum
 			int n;
 			string input = string.Empty;
 			CancellationTokenSource cts = null;
-			while (input != "ex")
+			while (!input.Equals("ex", StringComparison.OrdinalIgnoreCase))
 			{
 				input = Console.ReadLine();
 				if (cts != null)
