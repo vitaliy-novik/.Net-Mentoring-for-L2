@@ -1,0 +1,64 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.16
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IQueryable", "IQueryable", "{EDE461F0-DD4B-49A9-B0AD-3D424F21AC15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E3SProvider", "E3SProvider\E3SProvider.csproj", "{8C6BD52E-AD60-4908-9937-074962DCD0AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E3SProvider.Tests", "E3SProvider.Tests\E3SProvider.Tests.csproj", "{DE384656-9F92-4964-8CF2-54C589BA1F82}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExpressionTrees", "ExpressionTrees", "{06605BC2-5BB2-4735-86A5-4A299FDFA33C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionTransformer", "ExpressionTransformer\ExpressionTransformer.csproj", "{7F3012F2-1BB8-4C05-BCBA-D50775F78C3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionTransformer.Tests", "ExpressionTransformer.Tests\ExpressionTransformer.Tests.csproj", "{688E1E96-DBFA-41F8-AAC3-B18671816E96}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mapper", "Mapper\Mapper.csproj", "{514D43D1-E918-43CC-8A26-327D87A28D66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mapper.Tests", "Mapper.Tests\Mapper.Tests.csproj", "{5B4FF1DD-ABA2-483A-BC37-FB112C346579}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8C6BD52E-AD60-4908-9937-074962DCD0AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C6BD52E-AD60-4908-9937-074962DCD0AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C6BD52E-AD60-4908-9937-074962DCD0AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C6BD52E-AD60-4908-9937-074962DCD0AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE384656-9F92-4964-8CF2-54C589BA1F82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE384656-9F92-4964-8CF2-54C589BA1F82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE384656-9F92-4964-8CF2-54C589BA1F82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE384656-9F92-4964-8CF2-54C589BA1F82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F3012F2-1BB8-4C05-BCBA-D50775F78C3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F3012F2-1BB8-4C05-BCBA-D50775F78C3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F3012F2-1BB8-4C05-BCBA-D50775F78C3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F3012F2-1BB8-4C05-BCBA-D50775F78C3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{688E1E96-DBFA-41F8-AAC3-B18671816E96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{688E1E96-DBFA-41F8-AAC3-B18671816E96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{688E1E96-DBFA-41F8-AAC3-B18671816E96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{688E1E96-DBFA-41F8-AAC3-B18671816E96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{514D43D1-E918-43CC-8A26-327D87A28D66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{514D43D1-E918-43CC-8A26-327D87A28D66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{514D43D1-E918-43CC-8A26-327D87A28D66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{514D43D1-E918-43CC-8A26-327D87A28D66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B4FF1DD-ABA2-483A-BC37-FB112C346579}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B4FF1DD-ABA2-483A-BC37-FB112C346579}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B4FF1DD-ABA2-483A-BC37-FB112C346579}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B4FF1DD-ABA2-483A-BC37-FB112C346579}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8C6BD52E-AD60-4908-9937-074962DCD0AD} = {EDE461F0-DD4B-49A9-B0AD-3D424F21AC15}
+		{DE384656-9F92-4964-8CF2-54C589BA1F82} = {EDE461F0-DD4B-49A9-B0AD-3D424F21AC15}
+		{7F3012F2-1BB8-4C05-BCBA-D50775F78C3F} = {06605BC2-5BB2-4735-86A5-4A299FDFA33C}
+		{688E1E96-DBFA-41F8-AAC3-B18671816E96} = {06605BC2-5BB2-4735-86A5-4A299FDFA33C}
+		{514D43D1-E918-43CC-8A26-327D87A28D66} = {06605BC2-5BB2-4735-86A5-4A299FDFA33C}
+		{5B4FF1DD-ABA2-483A-BC37-FB112C346579} = {06605BC2-5BB2-4735-86A5-4A299FDFA33C}
+	EndGlobalSection
+EndGlobal
