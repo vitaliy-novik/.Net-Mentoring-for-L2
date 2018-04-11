@@ -10,7 +10,7 @@ namespace ServerPipe
 
 		public override string ToString()
 		{
-			return $"[{ClientName}, {Date.ToShortTimeString()}]: {Text}";
+			return $"[{ClientName}, {Date.ToLongTimeString()}]: {Text}";
 		}
 	}
 }

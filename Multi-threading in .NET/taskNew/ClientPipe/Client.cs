@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ClientPipe
@@ -27,12 +28,20 @@ namespace ClientPipe
 			this.connection.Disconnect();
 			this.connection = new PipeConnection(newConnectionName);
 			this.connection.StartConnection();
-			StartChatting();
+			try
+			{
+
+			}
+			catch (Exception)
+			{
+				StartChatting();
+			}
+			
 		}
 
 		private void StartChatting()
 		{
-			Task reader = Task.Run(() =>
+			ThreadPool.QueueUserWorkItem(state =>
 			{
 				while (true)
 				{
@@ -44,7 +53,7 @@ namespace ClientPipe
 			{
 				Random random = new Random();
 				int interval = random.Next(10) * 1000;
-				reader.Wait(interval);
+				Thread.Sleep(interval);
 
 				string message = this.phraseGenerator.GetPhrase();
 				this.connection.SendMessage(message);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO.Pipes;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SharedPipeLibrary
 {
@@ -27,10 +28,13 @@ namespace SharedPipeLibrary
 				pipeStream.Read(inBuffer, 0, len);
 			}
 			catch (Exception ex)
-			{ 
+			{
+				if (!pipeStream.IsConnected)
+				{
+					Console.WriteLine("Disconnected");
+				}
 				throw;
 			}
-			
 
 			return streamEncoding.GetString(inBuffer);
 		}
@@ -52,7 +56,10 @@ namespace SharedPipeLibrary
 			}
 			catch (Exception ex)
 			{
-
+				if (!pipeStream.IsConnected)
+				{
+					Console.WriteLine("Disconnected");
+				}
 				throw;
 			}
 

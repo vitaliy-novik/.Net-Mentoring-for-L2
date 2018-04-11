@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1.AsyncSum", "1.AsyncSum\1.AsyncSum.csproj", "{09D114F5-416D-4219-A30B-6A9577DB48E0}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncCRUD", "AsyncCRUD\AsyncCRUD.csproj", "{54C0C235-08B3-44FA-9FD0-D51C15178542}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncCRUD.Test", "AsyncCRUD.Test\AsyncCRUD.Test.csproj", "{63B12976-196E-42F4-A2E6-E94E679C4F60}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodStore", "FoodStore\FoodStore.csproj", "{8D0ED9E3-A618-4932-8AB2-4157B6EAF2D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +37,10 @@ Global
 		{63B12976-196E-42F4-A2E6-E94E679C4F60}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63B12976-196E-42F4-A2E6-E94E679C4F60}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63B12976-196E-42F4-A2E6-E94E679C4F60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D0ED9E3-A618-4932-8AB2-4157B6EAF2D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D0ED9E3-A618-4932-8AB2-4157B6EAF2D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D0ED9E3-A618-4932-8AB2-4157B6EAF2D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D0ED9E3-A618-4932-8AB2-4157B6EAF2D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,5 +48,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{54C0C235-08B3-44FA-9FD0-D51C15178542} = {CF5014C2-0E6A-4DC5-A6E7-F4B0ED320966}
 		{63B12976-196E-42F4-A2E6-E94E679C4F60} = {CF5014C2-0E6A-4DC5-A6E7-F4B0ED320966}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {71EE6F30-A7CF-4B2F-8843-BE6B7AFEFCF6}
 	EndGlobalSection
 EndGlobal

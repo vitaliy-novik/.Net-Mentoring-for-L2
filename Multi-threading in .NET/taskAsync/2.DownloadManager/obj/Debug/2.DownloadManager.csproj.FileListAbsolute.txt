@@ -16,3 +16,4 @@ D:\.Net Mentoring for L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj
 D:\.Net Mentoring for L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\2.DownloadManager.exe
 D:\.Net Mentoring for L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\2.DownloadManager.pdb
 C:\Users\NotePad\source\repos\.Net-Mentoring-for-L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\2.DownloadManager.csprojResolveAssemblyReference.cache
+D:\.Net Mentoring for L2\Multi-threading in .NET\taskAsync\2.DownloadManager\obj\Debug\2.DownloadManager.csprojResolveAssemblyReference.cache
