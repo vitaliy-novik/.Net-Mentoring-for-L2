@@ -299,4 +299,53 @@ __pycache__/
 # By default, sensitive information, such as encrypted password
 # should be stored in the .pubxml.user file.
 
-# End of https://www.gitignore.io/api/visualstudio
+/Multi-threading in .NET/taskMulth/.vs/taskMulth/v15
+/Multi-threading in .NET/taskMulth/1.ArrayOfTasks/bin/Debug
+/Multi-threading in .NET/taskMulth/1.ArrayOfTasks/obj/Debug
+/Multi-threading in .NET/taskMulth/2.ChainOfTasks/bin/Debug
+/Multi-threading in .NET/taskMulth/2.ChainOfTasks/obj/Debug
+/Multi-threading in .NET/taskMulth/3.ParallelMatricesMultiplication/obj/Debug
+/.vs
+/.vs
+/.vs/.Net-Mentoring-for-L2/v15
+/.vs/slnx.sqlite
+/Multi-threading in .NET/taskNew/ConsolePipeServer/bin/Debug
+/Multi-threading in .NET/taskNew/ConsolePipeServer/bin/Debug/ConsolePipeServer.pdb
+/Multi-threading in .NET/taskNew/ConsolePipeServer/bin/Debug/ConsolePipeServer.exe.config
+/Multi-threading in .NET/taskNew/ConsolePipeServer/bin/Debug/ConsolePipeServer.exe
+/Multi-threading in .NET/taskNew/ConsolePipeServer/bin/Debug
+/Multi-threading in .NET/taskMulth/1.ArrayOfTasks/obj/Release
+/Multi-threading in .NET/taskMulth/1.ArrayOfTasks/obj/Release
+/Multi-threading in .NET/taskMulth/2.ChainOfTasks/obj/Release
+/Multi-threading in .NET/taskMulth/1.ArrayOfTasks/obj/Release
+/Multi-threading in .NET/taskMulth/3.ParallelMatricesMultiplication/obj/Release
+/Multi-threading in .NET/taskMulth/3.ParallelMatricesMultiplication/bin
+/Multi-threading in .NET/taskMulth/4.JoinThreads/obj
+/Multi-threading in .NET/taskMulth/4.JoinThreads/bin/Debug
+/Multi-threading in .NET/taskMulth/6.SharedCollection/obj
+/Multi-threading in .NET/taskMulth/6.SharedCollection/bin/Debug
+/Multi-threading in .NET/taskMulth/7.ContinuationTasks/obj/Debug
+/Multi-threading in .NET/taskNew/ConsolePipeClient/obj/Debug
+/Multi-threading in .NET/taskNew/ConsolePipeClient/bin/Debug
+/Multi-threading in .NET/taskNew/ConsolePipeServer/obj/Debug
+/Multi-threading in .NET/taskMulth/7.ContinuationTasks/bin
+/Multi-threading in .NET/taskMulth/7.ContinuationTasks/obj/Release
+/Multi-threading in .NET/taskNew/.vs/taskNew/v15/Server/sqlite3
+/Multi-threading in .NET/taskNew/SharedPipeLibrary/bin/Debug
+/Multi-threading in .NET/taskNew/SharedPipeLibrary/obj/Debug
+/Multi-threading in .NET/taskNew/ServerPipe/bin/Debug
+/Multi-threading in .NET/taskNew/ServerPipe/obj/Debug
+/Multi-threading in .NET/taskAsync/1.AsyncSum/bin/Debug
+/Multi-threading in .NET/taskAsync/1.AsyncSum/bin/Debug
+/Multi-threading in .NET/taskAsync/1.AsyncSum/obj/Debug
+/Multi-threading in .NET/taskAsync/2.DownloadManager/bin/Debug
+/Multi-threading in .NET/taskAsync/.vs/taskAsync/v15/Server/sqlite3
+/Multi-threading in .NET/taskNew/ClientPipe/bin/Debug
+/Multi-threading in .NET/taskNew/ClientPipe/obj/Debug
+/Multi-threading in .NET/taskAsync/AsyncCRUD/bin/Debug
+/Multi-threading in .NET/taskAsync/AsyncCRUD/obj/Debug
+/Multi-threading in .NET/taskAsync/AsyncCRUD.Test/bin/Debug
+/Multi-threading in .NET/taskAsync/AsyncCRUD.Test/obj/Debug
+/Multi-threading in .NET/taskAsync/packages
+/Multi-threading in .NET/taskAsync/FoodStore/bin/Debug
+/Multi-threading in .NET/taskAsync/FoodStore/obj/Debug
