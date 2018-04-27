@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageBondingService", "ImageBondingService\ImageBondingService.csproj", "{B93D2822-59C1-48EE-8005-97069FDDA380}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentQueueService", "DocumentQueueService\DocumentQueueService.csproj", "{E6E8AC0F-6087-438C-AD14-4AA87E6604E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{B93D2822-59C1-48EE-8005-97069FDDA380}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B93D2822-59C1-48EE-8005-97069FDDA380}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B93D2822-59C1-48EE-8005-97069FDDA380}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6E8AC0F-6087-438C-AD14-4AA87E6604E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6E8AC0F-6087-438C-AD14-4AA87E6604E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6E8AC0F-6087-438C-AD14-4AA87E6604E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6E8AC0F-6087-438C-AD14-4AA87E6604E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

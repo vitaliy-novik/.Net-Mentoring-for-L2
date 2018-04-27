@@ -15,7 +15,6 @@ namespace ImageBondingService
 			var inDir = Path.Combine(currentDir, "in");
 			var outDir = Path.Combine(currentDir, "out");
 
-
 			var conf = new LoggingConfiguration();
 			var fileTarget = new FileTarget()
 			{

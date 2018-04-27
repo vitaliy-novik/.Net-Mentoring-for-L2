@@ -1,6 +1,7 @@
 ﻿using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Shapes;
 using MigraDoc.Rendering;
+using System.IO;
 
 namespace ImageBondingService
 {
@@ -26,13 +27,16 @@ namespace ImageBondingService
 			section.AddPageBreak();
 		}
 
-		public void SaveDocument(string documentPath)
+		public byte[] SaveDocument(string documentPath)
 		{
 			renderer.Document = this.document;
 			renderer.RenderDocument();
-			renderer.Save(documentPath);
 
+			MemoryStream stream = new MemoryStream();
+			renderer.Save(stream, false);
 			this.ResetDocument();
+
+			return stream.ToArray();
 		}
 
 		private void ResetDocument()
