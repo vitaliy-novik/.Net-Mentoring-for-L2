@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageBondingService", "Imag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentQueueService", "DocumentQueueService\DocumentQueueService.csproj", "{E6E8AC0F-6087-438C-AD14-4AA87E6604E6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{C1789D5E-C028-4BAE-BAA6-BF4201057C3C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{E6E8AC0F-6087-438C-AD14-4AA87E6604E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6E8AC0F-6087-438C-AD14-4AA87E6604E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6E8AC0F-6087-438C-AD14-4AA87E6604E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1789D5E-C028-4BAE-BAA6-BF4201057C3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1789D5E-C028-4BAE-BAA6-BF4201057C3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1789D5E-C028-4BAE-BAA6-BF4201057C3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1789D5E-C028-4BAE-BAA6-BF4201057C3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

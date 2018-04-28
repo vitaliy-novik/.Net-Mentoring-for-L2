@@ -14,12 +14,13 @@ namespace ImageBondingService
 		private string inDir;
 		private string outDir;
 		private int lastFileNumber = -1;
-		Regex imageRegex = new Regex(@"^image_\d+.(jpg|png)$");
+		private Regex imageRegex = new Regex(@"^image_\d+.(jpg|png)$");
 
-		Thread workThread;
+		private Thread workThread;
 
-		ManualResetEvent stopWorkEvent;
-		AutoResetEvent newFileEvent;
+		private ManualResetEvent stopWorkEvent;
+		private AutoResetEvent newFileEvent;
+		private AutoResetEvent newSettingsEvent;
 
 		public ImageBondingService(string inDir, string outDir)
 		{
@@ -40,13 +41,16 @@ namespace ImageBondingService
 			this.workThread = new Thread(WorkProcedure);
 			this.stopWorkEvent = new ManualResetEvent(false);
 			this.newFileEvent = new AutoResetEvent(false);
+			this.newSettingsEvent = new AutoResetEvent(false);
 		}
 
 		private void WorkProcedure(object obj)
 		{
+			this.messagingService.RecieveSettings();
+			Stream doc;
 			do
 			{
-				foreach (var file in Directory.EnumerateFiles(inDir))
+				foreach (var file in Directory.EnumerateFiles(inDir).OrderBy(f => f))
 				{
 					if (stopWorkEvent.WaitOne(TimeSpan.Zero))
 						return;
@@ -59,7 +63,7 @@ namespace ImageBondingService
 					{
 						if (this.EndDocument(fileName))
 						{
-							Stream doc = this.pdfService.GetDocument();
+							doc = this.pdfService.GetDocument();
 							this.messagingService.SendDocument(doc);
 						}
 						if (File.Exists(outFile))
@@ -75,7 +79,10 @@ namespace ImageBondingService
 				}
 
 			}
-			while (WaitHandle.WaitAny(new WaitHandle[] { stopWorkEvent, newFileEvent }, 1000) != 0);
+			while (WaitHandle.WaitAny(new WaitHandle[] { stopWorkEvent, newFileEvent, newSettingsEvent }, 1000) != 0);
+
+			doc = this.pdfService.GetDocument();
+			this.messagingService.SendDocument(doc);
 		}
 
 		private void Watcher_Created(object sender, FileSystemEventArgs e)
