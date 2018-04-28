@@ -1,17 +1,20 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace ImageBondingService
 {
 	class ImageBondingService
 	{
+		private MessagingService messagingService;
 		private PdfService pdfService;
 		private FileSystemWatcher watcher;
 		private string inDir;
 		private string outDir;
-		private string lastFile;
+		private int lastFileNumber = -1;
+		Regex imageRegex = new Regex(@"^image_\d+.(jpg|png)$");
 
 		Thread workThread;
 
@@ -21,6 +24,7 @@ namespace ImageBondingService
 		public ImageBondingService(string inDir, string outDir)
 		{
 			this.pdfService = new PdfService();
+			this.messagingService = new MessagingService();
 			this.inDir = inDir;
 			this.outDir = outDir;
 
@@ -47,12 +51,26 @@ namespace ImageBondingService
 					if (stopWorkEvent.WaitOne(TimeSpan.Zero))
 						return;
 
-					var inFile = file;
-					var outFile = Path.Combine(outDir, Path.GetFileName(file));
+					string inFile = file;
+					string fileName = Path.GetFileName(file);
+					string outFile = Path.Combine(outDir, fileName);
 
-					if (this.TryOpen(inFile, 3))
+					if (this.imageRegex.IsMatch(fileName) && this.TryOpen(inFile, 3))
 					{
-						this.pdfService.InsetImage(inFile);
+						if (this.EndDocument(fileName))
+						{
+							Stream doc = this.pdfService.GetDocument();
+							this.messagingService.SendDocument(doc);
+						}
+						if (File.Exists(outFile))
+						{
+							File.Delete(inFile);
+						}
+						else
+						{
+							File.Move(inFile, outFile);
+						}
+						this.pdfService.InsetImage(outFile);
 					}
 				}
 
@@ -67,15 +85,28 @@ namespace ImageBondingService
 
 		public void Start()
 		{
-			workThread.Start();
-			watcher.EnableRaisingEvents = true;
+			this.workThread.Start();
+			this.watcher.EnableRaisingEvents = true;
 		}
 
 		public void Stop()
 		{
-			watcher.EnableRaisingEvents = false;
-			stopWorkEvent.Set();
-			workThread.Join();
+			this.watcher.EnableRaisingEvents = false;
+			this.stopWorkEvent.Set();
+			this.workThread.Join();
+		}
+
+		public bool EndDocument(string fileName)
+		{
+			string resultString = Regex.Match(fileName, @"\d+").Value;
+			int number = Int32.Parse(resultString);
+			if (this.lastFileNumber == -1 || number == this.lastFileNumber + 1)
+			{
+				this.lastFileNumber = number;
+				return false;
+			}
+
+			return true;
 		}
 
 		private bool TryOpen(string fileName, int tryCount)

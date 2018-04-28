@@ -1,13 +1,8 @@
 ﻿using NLog;
 using NLog.Config;
 using NLog.Targets;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Topshelf;
 
 namespace DocumentQueueService
@@ -39,6 +34,5 @@ namespace DocumentQueueService
 						s.WhenStopped(serv => serv.Stop());
 					}).UseNLog(logFactory));
 		}
-	}
 	}
 }

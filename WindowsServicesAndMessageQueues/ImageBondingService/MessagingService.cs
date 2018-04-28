@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.IO;
 using System.Messaging;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ImageBondingService
 {
@@ -20,12 +16,11 @@ namespace ImageBondingService
 				messageQueue = MessageQueue.Create(queueName);
 		}
 
-		public void SendDocument()
+		public void SendDocument(Stream document)
 		{
-			using (messageQueue)
-			{
-				messageQueue.Send("Simple Message");
-			}
+			Message message = new Message();
+			message.BodyStream = document;
+			messageQueue.Send(message);
 		}
 
 	}

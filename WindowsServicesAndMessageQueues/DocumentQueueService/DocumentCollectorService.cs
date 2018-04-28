@@ -7,10 +7,12 @@ namespace DocumentQueueService
 {
 	class DocumentCollectorService
 	{
-		const string ServerQueueName = @".\Private$\DocumentsQueue";
+		private const string ServerQueueName = @".\Private$\DocumentsQueue";
 		private string outDir;
-		Thread workThread;
-		ManualResetEvent stopWorkEvent;
+		private Thread workThread;
+		private ManualResetEvent stopWorkEvent;
+		private int fileCounter;
+
 
 		public DocumentCollectorService(string outDir)
 		{
@@ -25,10 +27,8 @@ namespace DocumentQueueService
 
 		private void WorkProcedure()
 		{
-			using (var serverQueue = new MessageQueue(ServerQueueName))
+			using (MessageQueue serverQueue = new MessageQueue(ServerQueueName))
 			{
-				serverQueue.Formatter = new XmlMessageFormatter(new Type[] { typeof(string) });
-
 				while (true)
 				{
 					IAsyncResult asyncReceive = serverQueue.BeginPeek();
@@ -37,18 +37,21 @@ namespace DocumentQueueService
 					if (res == 0)
 						break;
 
-					var message = serverQueue.EndPeek(asyncReceive);
+					Message message = serverQueue.EndPeek(asyncReceive);
 					serverQueue.ReceiveById(message.Id);
-
-					var clientQueue = message.ResponseQueue;
-
-					if (clientQueue == null)
-					{
-						clientQueue.Send(new Message("") { CorrelationId = message.Id });
-					}
-
-					string text = string.Format("Received {0}\n", message.Body);
+					this.SaveFile(message.BodyStream);
 				}
+			}
+		}
+
+		private void SaveFile(Stream bodyStream)
+		{
+			string filePath = Path.Combine(this.outDir, $"{this.fileCounter++}.pdf");
+			using (FileStream fileStream = File.Create(filePath))
+			{
+				bodyStream.Seek(0, SeekOrigin.Begin);
+				bodyStream.CopyTo(fileStream);
+				fileCounter++;
 			}
 		}
 

@@ -23,11 +23,15 @@ namespace ImageBondingService
 			Image image = section.AddImage(filePath);
 			image.Height = document.DefaultPageSetup.PageHeight;
 			image.Width = document.DefaultPageSetup.PageWidth;
+			image.WrapFormat.DistanceBottom =
+				image.WrapFormat.DistanceLeft =
+				image.WrapFormat.DistanceRight =
+				image.WrapFormat.DistanceTop = 0;
 
 			section.AddPageBreak();
 		}
 
-		public byte[] SaveDocument(string documentPath)
+		public Stream GetDocument()
 		{
 			renderer.Document = this.document;
 			renderer.RenderDocument();
@@ -36,7 +40,7 @@ namespace ImageBondingService
 			renderer.Save(stream, false);
 			this.ResetDocument();
 
-			return stream.ToArray();
+			return stream;
 		}
 
 		private void ResetDocument()
