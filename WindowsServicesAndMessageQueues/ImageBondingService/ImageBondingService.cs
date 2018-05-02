@@ -1,93 +1,49 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace ImageBondingService
 {
 	class ImageBondingService
 	{
-		private MessagingService messagingService;
-		private PdfService pdfService;
+		private ClientQueueService messagingService;
 		private FileSystemWatcher watcher;
-		private string inDir;
-		private string outDir;
-		private int lastFileNumber = -1;
-		private Regex imageRegex = new Regex(@"^image_\d+.(jpg|png)$");
+		private PdfService pdfService;
 
 		private Thread workThread;
 
 		private ManualResetEvent stopWorkEvent;
 		private AutoResetEvent newFileEvent;
 		private AutoResetEvent newSettingsEvent;
+		private FileSystemService fileSystemService;
+		private string guid;
 
 		public ImageBondingService(string inDir, string outDir)
 		{
-			this.pdfService = new PdfService();
-			this.messagingService = new MessagingService();
-			this.inDir = inDir;
-			this.outDir = outDir;
-
-			if (!Directory.Exists(inDir))
-				Directory.CreateDirectory(inDir);
-
-			if (!Directory.Exists(outDir))
-				Directory.CreateDirectory(outDir);
-
-			this.watcher = new FileSystemWatcher(inDir);
-			watcher.Created += Watcher_Created;
-
+			this.fileSystemService = new FileSystemService(inDir, outDir);
 			this.workThread = new Thread(WorkProcedure);
 			this.stopWorkEvent = new ManualResetEvent(false);
 			this.newFileEvent = new AutoResetEvent(false);
 			this.newSettingsEvent = new AutoResetEvent(false);
+			this.watcher = new FileSystemWatcher(inDir);
+			this.watcher.Created += Watcher_Created;
+			this.guid = Guid.NewGuid().ToString();
+			this.messagingService = new ClientQueueService(this.guid);
+			this.pdfService = new PdfService();
 		}
 
 		private void WorkProcedure(object obj)
 		{
-			this.messagingService.RecieveSettings();
-			Stream doc;
+			ServiceState state = new ServiceState();
+			
 			do
 			{
-				foreach (var file in Directory.EnumerateFiles(inDir).OrderBy(f => f))
-				{
-					if (stopWorkEvent.WaitOne(TimeSpan.Zero))
-						return;
-
-					string inFile = file;
-					string fileName = Path.GetFileName(file);
-					string outFile = Path.Combine(outDir, fileName);
-
-					if (this.imageRegex.IsMatch(fileName) && this.TryOpen(inFile, 3))
-					{
-						if (this.EndDocument(fileName))
-						{
-							doc = this.pdfService.GetDocument();
-							this.messagingService.SendDocument(doc);
-						}
-						if (File.Exists(outFile))
-						{
-							File.Delete(inFile);
-						}
-						else
-						{
-							File.Move(inFile, outFile);
-						}
-						this.pdfService.InsetImage(outFile);
-					}
-				}
-
+				this.messagingService.RecieveSettings(this.Settings_Updated);
+				this.fileSystemService.Run(state);
+				this.pdfService.Run(state);
+				this.messagingService.SendDocument(state.Document);
 			}
 			while (WaitHandle.WaitAny(new WaitHandle[] { stopWorkEvent, newFileEvent, newSettingsEvent }, 1000) != 0);
-
-			doc = this.pdfService.GetDocument();
-			this.messagingService.SendDocument(doc);
-		}
-
-		private void Watcher_Created(object sender, FileSystemEventArgs e)
-		{
-			newFileEvent.Set();
 		}
 
 		public void Start()
@@ -103,37 +59,14 @@ namespace ImageBondingService
 			this.workThread.Join();
 		}
 
-		public bool EndDocument(string fileName)
+		private void Watcher_Created(object sender, FileSystemEventArgs e)
 		{
-			string resultString = Regex.Match(fileName, @"\d+").Value;
-			int number = Int32.Parse(resultString);
-			if (this.lastFileNumber == -1 || number == this.lastFileNumber + 1)
-			{
-				this.lastFileNumber = number;
-				return false;
-			}
-
-			return true;
+			this.newFileEvent.Set();
 		}
 
-		private bool TryOpen(string fileName, int tryCount)
+		private void Settings_Updated(ClientStatus status)
 		{
-			for (int i = 0; i < tryCount; i++)
-			{
-				try
-				{
-					var file = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.None);
-					file.Close();
-
-					return true;
-				}
-				catch (IOException)
-				{
-					Thread.Sleep(5000);
-				}
-			}
-
-			return false;
+			this.newSettingsEvent.Set();
 		}
 	}
 }

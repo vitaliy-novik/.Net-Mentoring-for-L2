@@ -18,6 +18,20 @@ namespace ImageBondingService
 			this.section = this.document.AddSection();
 		}
 
+		public void Run(ServiceState state)
+		{
+			if (state.DocumentFinished)
+			{
+				state.Document = this.GetDocument();
+			}
+
+			if (!string.IsNullOrEmpty(state.NextImage))
+			{
+				this.InsetImage(state.NextImage);
+				state.DocumentFinished = false;
+			}
+		}
+
 		public void InsetImage(string filePath)
 		{
 			Image image = section.AddImage(filePath);
