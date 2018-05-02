@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientStatus.cs" />
+    <Compile Include="Document.cs" />
     <Compile Include="MessagingService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

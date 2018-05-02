@@ -7,8 +7,6 @@ namespace ImageBondingService
 	class ImageBondingService
 	{
 		private ClientQueueService messagingService;
-		private FileSystemWatcher watcher;
-		private PdfService pdfService;
 
 		private Thread workThread;
 
@@ -25,36 +23,47 @@ namespace ImageBondingService
 			this.stopWorkEvent = new ManualResetEvent(false);
 			this.newFileEvent = new AutoResetEvent(false);
 			this.newSettingsEvent = new AutoResetEvent(false);
-			this.watcher = new FileSystemWatcher(inDir);
-			this.watcher.Created += Watcher_Created;
-			this.guid = Guid.NewGuid().ToString();
+			this.guid = Guid.NewGuid().ToString("N");
 			this.messagingService = new ClientQueueService(this.guid);
-			this.pdfService = new PdfService();
+			
 		}
 
 		private void WorkProcedure(object obj)
 		{
 			ServiceState state = new ServiceState();
+
+			//do
+			//{
+			//	this.messagingService.RecieveSettings(this.Settings_Updated);
+			//	this.fileSystemService.Run(state);
+			//	this.pdfService.Run(state);
+			//	this.messagingService.SendDocument(state);
+			//}
+			//while (WaitHandle.WaitAny(new WaitHandle[] { stopWorkEvent, newFileEvent, newSettingsEvent }, 1000) != 0);
+
+			ThreadPool.QueueUserWorkItem(this.ProcessImages, state);
+			ThreadPool.QueueUserWorkItem(this.ListenServer, state);
+
+			this.stopWorkEvent.WaitOne();
+		}
+
+		private void ListenServer(object state)
+		{
 			
-			do
-			{
-				this.messagingService.RecieveSettings(this.Settings_Updated);
-				this.fileSystemService.Run(state);
-				this.pdfService.Run(state);
-				this.messagingService.SendDocument(state.Document);
-			}
-			while (WaitHandle.WaitAny(new WaitHandle[] { stopWorkEvent, newFileEvent, newSettingsEvent }, 1000) != 0);
+		}
+
+		private void ProcessImages(object state)
+		{
+
 		}
 
 		public void Start()
 		{
 			this.workThread.Start();
-			this.watcher.EnableRaisingEvents = true;
 		}
 
 		public void Stop()
 		{
-			this.watcher.EnableRaisingEvents = false;
 			this.stopWorkEvent.Set();
 			this.workThread.Join();
 		}

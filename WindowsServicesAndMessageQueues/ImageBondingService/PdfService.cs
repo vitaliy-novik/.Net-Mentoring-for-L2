@@ -28,7 +28,6 @@ namespace ImageBondingService
 			if (!string.IsNullOrEmpty(state.NextImage))
 			{
 				this.InsetImage(state.NextImage);
-				state.DocumentFinished = false;
 			}
 		}
 

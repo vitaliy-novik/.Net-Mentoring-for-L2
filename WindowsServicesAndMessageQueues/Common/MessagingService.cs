@@ -5,36 +5,43 @@ namespace Common
 {
 	public class MessagingService
 	{
-		private MessageQueue sendQueue;
 		private MessageQueue responseQueue;
 		private readonly string replayTo;
-		private readonly string path;
 
-		public MessagingService(string sendPath, string replayTo)
+		public MessagingService(string replayTo)
 		{
-			if (!MessageQueue.Exists(path))
-			{
-				MessageQueue.Create(path);
-			}
 			if (!MessageQueue.Exists(replayTo))
 			{
 				MessageQueue.Create(replayTo);
 			}
 
 			this.replayTo = replayTo;
-			this.replayTo = replayTo;
 		}
 
-		public void SendMessage<T>(T messageBody)
+		public void SendMessage(Message message, MessageQueue targetQueue)
 		{
-			using (this.sendQueue = new MessageQueue(this.path))
+			using (this.responseQueue = new MessageQueue(this.replayTo))
+			{
+				message.ResponseQueue = this.responseQueue;
+
+				targetQueue.Send(message);
+			}
+		}
+
+		public void SendMessage(Message message, string targetQueuePath)
+		{
+			if (!MessageQueue.Exists(replayTo))
+			{
+				MessageQueue.Create(replayTo);
+			}
+
+			using (MessageQueue targetQueue = new MessageQueue(targetQueuePath))
 			{
 				using (this.responseQueue = new MessageQueue(this.replayTo))
 				{
-					Message message = new Message(messageBody)
-					{
-						ResponseQueue = this.responseQueue
-					};
+					message.ResponseQueue = this.responseQueue;
+
+					targetQueue.Send(message);
 				}
 			}
 		}
@@ -52,11 +59,6 @@ namespace Common
 				});
 				this.responseQueue.BeginPeek();
 			}
-		}
-
-		private void MessageRecieved(object sender, PeekCompletedEventArgs e)
-		{
-			
 		}
 	}
 }

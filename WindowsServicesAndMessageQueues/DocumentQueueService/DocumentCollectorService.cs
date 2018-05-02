@@ -13,16 +13,16 @@ namespace DocumentQueueService
 		private readonly string settingsFile;
 		private Thread workThread;
 		private ManualResetEvent stopWorkEvent;
+		private AutoResetEvent settingsChangedEvent;
 		private FileSystemWatcher watcher;
-		private int fileCounter;
+		private ServerQueueService queueService;
+		private XmlService xmlService;
+		private FileSystemService fileService;
 
-		public DocumentCollectorService(string outDir, string settingsFile)
+		public DocumentCollectorService(string outDir, string settingsFile, string clientsFile)
 		{
 			this.outDir = outDir;
 			this.settingsFile = settingsFile;
-
-			if (!Directory.Exists(outDir))
-				Directory.CreateDirectory(outDir);
 
 			this.watcher = new FileSystemWatcher(Path.GetDirectoryName(settingsFile));
 			this.watcher.Filter = Path.GetFileName(settingsFile);
@@ -30,45 +30,33 @@ namespace DocumentQueueService
 
 			this.workThread = new Thread(WorkProcedure);
 			this.stopWorkEvent = new ManualResetEvent(false);
+			this.settingsChangedEvent = new AutoResetEvent(false);
+			this.queueService = new ServerQueueService();
+			this.xmlService = new XmlService(clientsFile);
+			this.fileService = new FileSystemService(outDir);
 		}
 
 		private void WorkProcedure()
 		{
-			using (MessageQueue documentsQueue = new MessageQueue(DocumentsQueueName))
+			ServiceState state = new ServiceState()
 			{
-				while (true)
-				{
-					IAsyncResult asyncReceive = documentsQueue.BeginPeek();
-					int res = WaitHandle.WaitAny(new WaitHandle[] { stopWorkEvent, asyncReceive.AsyncWaitHandle });
-					if (res == 0)
-					{
-						break;
-					}
+				MessageRecievedEvent = new AutoResetEvent(false),
+				SettingsChangedEvent = new AutoResetEvent(false)
+			};
 
-					Message message = documentsQueue.EndPeek(asyncReceive);
-					documentsQueue.ReceiveById(message.Id);
-					this.SaveFile(message.BodyStream);
-				}
-			}
-		}
-
-		private void SaveFile(Stream bodyStream)
-		{
-			string filePath = Path.Combine(this.outDir, $"{this.fileCounter++}.pdf");
-			using (FileStream fileStream = File.Create(filePath))
+			do
 			{
-				bodyStream.Seek(0, SeekOrigin.Begin);
-				bodyStream.CopyTo(fileStream);
-				fileCounter++;
+				this.queueService.WaitMessage(state);
+				this.xmlService.SaveStatus(state);
+				this.fileService.SaveDocument(state);
+				this.queueService.RecieveStatus(state);
 			}
+			while (WaitHandle.WaitAny(new WaitHandle[] { stopWorkEvent, settingsChangedEvent }, 1000) != 0);
 		}
 
 		private void Watcher_Changed(object sender, FileSystemEventArgs e)
 		{
-			using (MessageQueue settingsQueue = new MessageQueue("formatname:multicast=234.1.1.1:8001"))
-			{
-				settingsQueue.Send("Multi-pulti");
-			}
+			this.settingsChangedEvent.Set();
 		}
 
 		public void Start()

@@ -1,6 +1,5 @@
 ﻿using Common;
 using System;
-using System.IO;
 using System.Messaging;
 
 namespace ImageBondingService
@@ -8,20 +7,24 @@ namespace ImageBondingService
 	class ClientQueueService
 	{
 		private const string ServerQueueName = @".\private$\ServerQueue";
-		private const string ClientsQueuesPrefix = @".\private$\ClientsQueues\";
+		private const string ClientsQueuesPrefix = @".\private$\ClientQueue";
 		private MessagingService messagingService;
 		private bool statusUpdated = false;
 
 		public ClientQueueService(string guid)
 		{
-			this.messagingService = new MessagingService(ServerQueueName, ClientsQueuesPrefix + guid);
+			this.messagingService = new MessagingService(ClientsQueuesPrefix + guid);
 		}
 
-		public void SendDocument(Stream document)
+		public void SendDocument(ServiceState state)
 		{
-			Message message = new Message();
-			message.BodyStream = document;
-			this.messagingService.SendMessage(document);
+			if (state.DocumentFinished)
+			{
+				Message message = new Message();
+				message.BodyStream = state.Document;
+				this.messagingService.SendMessage(message, ServerQueueName);
+				state.DocumentFinished = false;
+			}
 		}
 
 		public void RecieveSettings(Action<ClientStatus> callback)

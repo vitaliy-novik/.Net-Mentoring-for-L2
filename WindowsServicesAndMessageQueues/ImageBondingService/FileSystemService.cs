@@ -12,9 +12,10 @@ namespace ImageBondingService
 	{
 		private string inDir;
 		private string outDir;
+		private FileSystemWatcher watcher;
 		private int lastFileNumber = -1;
 		private Regex imageRegex = new Regex(@"^image_\d+.(jpg|png)$");
-		private ClientQueueService messagingService;
+		private PdfService pdfService;
 
 		public FileSystemService(string inDir, string outDir)
 		{
@@ -26,9 +27,18 @@ namespace ImageBondingService
 
 			if (!Directory.Exists(outDir))
 				Directory.CreateDirectory(outDir);
+
+			this.watcher = new FileSystemWatcher(inDir);
+			this.pdfService = new PdfService();
 		}
 
-		public void Run(ServiceState state)
+		public void Start()
+		{
+			this.watcher.Created += ReadFiles;
+			this.watcher.EnableRaisingEvents = true;
+		}
+
+		public void ReadFiles(object sender, FileSystemEventArgs e)
 		{
 			foreach (var file in Directory.EnumerateFiles(inDir).OrderBy(f => f))
 			{
@@ -38,7 +48,11 @@ namespace ImageBondingService
 
 				if (this.imageRegex.IsMatch(fileName) && this.TryOpen(inFile, 3))
 				{
-					state.DocumentFinished = this.EndDocument(fileName);
+					if (this.EndDocument(fileName))
+					{
+
+					}
+
 					if (File.Exists(outFile))
 					{
 						File.Delete(inFile);
