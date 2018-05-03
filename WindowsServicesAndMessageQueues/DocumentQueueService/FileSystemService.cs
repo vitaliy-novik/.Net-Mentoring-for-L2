@@ -1,57 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Common;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DocumentQueueService
 {
 	class FileSystemService
 	{
-		private string outDir;
-		private int lastFileNumber = 0;
+		private string settingsFile;
+		private FileSystemWatcher watcher;
+		private ServerQueueService queueService;
 
-		public FileSystemService(string outDir)
+		public FileSystemService(string settingsFile)
 		{
-			this.outDir = outDir;
-
-			if (!Directory.Exists(outDir))
-				Directory.CreateDirectory(outDir);
-		}
-
-		public void SaveDocument(ServiceState state)
-		{
-			if (!state.DocumentSaved && state.Documents != null)
+			this.settingsFile = settingsFile;
+			if (!File.Exists(settingsFile))
 			{
-				string filePath = Path.Combine(this.outDir, $"{this.lastFileNumber++}.pdf");
-				using (FileStream fileStream = File.Create(filePath))
-				{
-					state.Documents.Seek(0, SeekOrigin.Begin);
-					state.Documents.CopyTo(fileStream);
-				}
-			}
-		}
-
-		private bool TryOpen(string fileName, int tryCount)
-		{
-			for (int i = 0; i < tryCount; i++)
-			{
-				try
-				{
-					var file = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.None);
-					file.Close();
-
-					return true;
-				}
-				catch (IOException)
-				{
-					Thread.Sleep(5000);
-				}
+				File.Create(settingsFile);
 			}
 
-			return false;
+			this.watcher = new FileSystemWatcher(Path.GetDirectoryName(settingsFile));
+			this.watcher.Filter = Path.GetFileName(settingsFile);
+			this.queueService = new ServerQueueService();
+		}
+
+		public void Start()
+		{
+			this.SendSettings();
+			this.watcher.EnableRaisingEvents = true;
+			this.watcher.Changed += this.UpdateSettings;
+		}
+
+		private void SendSettings()
+		{
+			Settings settings = this.ReadSettings();
+			this.queueService.SendSettings(settings);
+		}
+
+		private void UpdateSettings(object sender, FileSystemEventArgs e)
+		{
+			this.queueService.RecieveSettings();
+			this.SendSettings();
+		}
+
+		private Settings ReadSettings()
+		{
+			using (FileStream fs = new FileStream(settingsFile, FileMode.Open, FileAccess.Read))
+			{
+				using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
+				{
+					string settingsLine = sr.ReadLine();
+					int timeout;
+					Settings settings = new Settings();
+					if (int.TryParse(settingsLine, out timeout))
+					{
+						settings.Timeout = timeout;
+					}
+
+					return settings;
+				}
+			}
 		}
 	}
 }

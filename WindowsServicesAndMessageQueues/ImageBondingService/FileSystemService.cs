@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -16,8 +14,9 @@ namespace ImageBondingService
 		private int lastFileNumber = -1;
 		private Regex imageRegex = new Regex(@"^image_\d+.(jpg|png)$");
 		private PdfService pdfService;
+		private ClientQueueService messagingService;
 
-		public FileSystemService(string inDir, string outDir)
+		public FileSystemService(string inDir, string outDir, string serviceGuid)
 		{
 			this.inDir = inDir;
 			this.outDir = outDir;
@@ -30,6 +29,7 @@ namespace ImageBondingService
 
 			this.watcher = new FileSystemWatcher(inDir);
 			this.pdfService = new PdfService();
+			this.messagingService = new ClientQueueService(serviceGuid);
 		}
 
 		public void Start()
@@ -40,6 +40,7 @@ namespace ImageBondingService
 
 		public void ReadFiles(object sender, FileSystemEventArgs e)
 		{
+			this.messagingService.SendStatus(ClientStatus.Processing);
 			foreach (var file in Directory.EnumerateFiles(inDir).OrderBy(f => f))
 			{
 				string inFile = file;
@@ -50,7 +51,8 @@ namespace ImageBondingService
 				{
 					if (this.EndDocument(fileName))
 					{
-
+						Stream doc = this.pdfService.GetDocument();
+						this.messagingService.SendDocument(doc);
 					}
 
 					if (File.Exists(outFile))
@@ -62,9 +64,11 @@ namespace ImageBondingService
 						File.Move(inFile, outFile);
 					}
 
-					state.NextImage = outFile;
+					this.pdfService.InsetImage(outFile);
 				}
 			}
+
+			this.messagingService.SendStatus(ClientStatus.Waiting);
 		}
 
 		public bool EndDocument(string fileName)
@@ -77,6 +81,7 @@ namespace ImageBondingService
 				return false;
 			}
 
+			this.lastFileNumber = number;
 			return true;
 		}
 

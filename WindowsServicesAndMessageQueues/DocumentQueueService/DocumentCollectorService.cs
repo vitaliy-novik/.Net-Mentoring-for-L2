@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Messaging;
+﻿using Common;
 using System.Threading;
 
 namespace DocumentQueueService
@@ -11,65 +9,69 @@ namespace DocumentQueueService
 		private const string SettingsQueueName = @".\private$\SettingsQueue";
 		private readonly string outDir;
 		private readonly string settingsFile;
+
 		private Thread workThread;
 		private ManualResetEvent stopWorkEvent;
-		private AutoResetEvent settingsChangedEvent;
-		private FileSystemWatcher watcher;
+
 		private ServerQueueService queueService;
 		private XmlService xmlService;
 		private FileSystemService fileService;
+		private DocumentsService documentService;
 
 		public DocumentCollectorService(string outDir, string settingsFile, string clientsFile)
 		{
 			this.outDir = outDir;
 			this.settingsFile = settingsFile;
 
-			this.watcher = new FileSystemWatcher(Path.GetDirectoryName(settingsFile));
-			this.watcher.Filter = Path.GetFileName(settingsFile);
-			this.watcher.Changed += Watcher_Changed;
-
 			this.workThread = new Thread(WorkProcedure);
 			this.stopWorkEvent = new ManualResetEvent(false);
-			this.settingsChangedEvent = new AutoResetEvent(false);
+
 			this.queueService = new ServerQueueService();
 			this.xmlService = new XmlService(clientsFile);
-			this.fileService = new FileSystemService(outDir);
+			this.fileService = new FileSystemService(settingsFile);
+			this.documentService = new DocumentsService(outDir);
 		}
 
 		private void WorkProcedure()
 		{
-			ServiceState state = new ServiceState()
-			{
-				MessageRecievedEvent = new AutoResetEvent(false),
-				SettingsChangedEvent = new AutoResetEvent(false)
-			};
+			ServiceState state = new ServiceState();
 
-			do
-			{
-				this.queueService.WaitMessage(state);
-				this.xmlService.SaveStatus(state);
-				this.fileService.SaveDocument(state);
-				this.queueService.RecieveStatus(state);
-			}
-			while (WaitHandle.WaitAny(new WaitHandle[] { stopWorkEvent, settingsChangedEvent }, 1000) != 0);
+			ThreadPool.QueueUserWorkItem(this.ProcessSettings, state);
+			ThreadPool.QueueUserWorkItem(this.ListenClients, state);
+
+			this.stopWorkEvent.WaitOne();
 		}
 
-		private void Watcher_Changed(object sender, FileSystemEventArgs e)
+		private void ListenClients(object state)
 		{
-			this.settingsChangedEvent.Set();
+			while (true)
+			{
+				object message = this.queueService.Recieve();
+				if (message is Status)
+				{
+					this.xmlService.SaveStatus(message as Status);
+				}
+				else if (message is Document)
+				{
+					this.documentService.SaveDocument(message as Document);
+				}
+			}
+		}
+
+		private void ProcessSettings(object state)
+		{
+			this.fileService.Start();
 		}
 
 		public void Start()
 		{
 			workThread.Start();
-			this.watcher.EnableRaisingEvents = true;
 		}
 
 		public void Stop()
 		{
-			this.watcher.EnableRaisingEvents = false;
-			stopWorkEvent.Set();
-			workThread.Join();
+			this.stopWorkEvent.Set();
+			this.workThread.Join();
 		}
 	}
 }

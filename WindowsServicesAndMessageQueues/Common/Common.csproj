@@ -43,8 +43,9 @@
   <ItemGroup>
     <Compile Include="ClientStatus.cs" />
     <Compile Include="Document.cs" />
-    <Compile Include="MessagingService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="Status.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

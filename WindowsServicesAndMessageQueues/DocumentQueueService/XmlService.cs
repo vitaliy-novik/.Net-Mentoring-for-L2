@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Common;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace DocumentQueueService
@@ -21,9 +18,25 @@ namespace DocumentQueueService
 			}
 		}
 
-		public void SaveStatus(ServiceState state)
+		public void SaveStatus(Status status)
 		{
 			XDocument doc = XDocument.Load(path);
+			var clients = doc.Element("Clients");
+			var client = clients.Elements("Client").FirstOrDefault(e => e.Attribute("id").Value == status.ClientId);
+			if (client == null)
+			{
+				clients.Add(
+					new XElement(
+						"Client", 
+						new XAttribute("id", status.ClientId), 
+						status.ClientStatus.ToString()));
+			}
+			else
+			{
+				client.Value = status.ClientStatus.ToString();
+			}
+
+			doc.Save(path);
 		}
 
 		private void CreateXmlStub(string path)

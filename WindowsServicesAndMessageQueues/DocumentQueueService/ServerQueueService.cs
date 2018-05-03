@@ -1,8 +1,5 @@
 ﻿using Common;
-using System.Collections.Generic;
-using System.IO;
 using System.Messaging;
-using System.Linq;
 using System;
 
 namespace DocumentQueueService
@@ -10,57 +7,41 @@ namespace DocumentQueueService
 	class ServerQueueService
 	{
 		private const string ServerQueueName = @".\private$\ServerQueue";
-		private List<MessageQueue> clientsQueues;
+		private const string ClientsQueuesPrefix = @".\private$\ClientQueue";
 		private MessageQueue serverQueue;
+		private MessageQueue clientQueue;
 
 		public ServerQueueService()
 		{
-			if (!MessageQueue.Exists(ServerQueueName))
-			{
-				MessageQueue.Create(ServerQueueName);
-			}
+			if (MessageQueue.Exists(ServerQueueName))
+				this.serverQueue = new MessageQueue(ServerQueueName);
+			else
+				this.serverQueue = MessageQueue.Create(ServerQueueName);
 
-			this.serverQueue = new MessageQueue(ServerQueueName);
-			this.serverQueue.Formatter = new XmlMessageFormatter(new Type[] { typeof(ClientStatus), typeof(Document) });
+			if (MessageQueue.Exists(ClientsQueuesPrefix))
+				this.clientQueue = new MessageQueue(ClientsQueuesPrefix);
+			else
+				this.clientQueue = MessageQueue.Create(ClientsQueuesPrefix);
+
+			this.serverQueue.Formatter = new XmlMessageFormatter(new Type[] { typeof(Status), typeof(Document) });
+			this.clientQueue.Formatter = new XmlMessageFormatter(new Type[] { typeof(Status), typeof(Settings) });
 		}
 
-		public void RecieveStatus(ServiceState state)
+		public void SendSettings(Settings settings)
 		{
-			this.serverQueue.RecieveMessage<ClientStatus>(message =>
-			{
-				Client client = state.Clients.FirstOrDefault(cl => cl.Queue.FormatName.Equals(message.ResponseQueue.FormatName));
-				if (client != null && message.Body is ClientStatus)
-				{
-					client.Status = (ClientStatus)message.Body;
-				}
-			});
+			this.clientQueue.Send(settings);
 		}
 
-		public void RecieveMessage(ServiceState state)
+		public Settings RecieveSettings()
 		{
-			if (state.MessageRecieved)
-			{
-				Message message = this.serverQueue.Receive();
-				string client = message.ResponseQueue.FormatName;
-				if (message.Body is ClientStatus)
-				{
-
-				}
-				else if (message.Body is Document)
-				{
-
-				}
-			}
+			return this.clientQueue.Receive().Body as Settings;
 		}
 
-		public void WaitMessage(ServiceState state)
+		public object Recieve()
 		{
-			this.serverQueue.PeekCompleted += new PeekCompletedEventHandler((sender, eventArgs) => {
-				this.serverQueue.EndPeek(eventArgs.AsyncResult);
-				state.MessageRecievedEvent.Set();
-			});
+			Message message = this.serverQueue.Receive();
 
-			this.serverQueue.BeginPeek();
+			return message.Body;
 		}
 	}
 }
