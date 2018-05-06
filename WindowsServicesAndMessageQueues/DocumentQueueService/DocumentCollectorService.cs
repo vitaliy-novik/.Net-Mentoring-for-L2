@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Messaging;
+﻿using Common;
 using System.Threading;
 
 namespace DocumentQueueService
@@ -11,77 +9,69 @@ namespace DocumentQueueService
 		private const string SettingsQueueName = @".\private$\SettingsQueue";
 		private readonly string outDir;
 		private readonly string settingsFile;
+
 		private Thread workThread;
 		private ManualResetEvent stopWorkEvent;
-		private FileSystemWatcher watcher;
-		private int fileCounter;
 
-		public DocumentCollectorService(string outDir, string settingsFile)
+		private ServerQueueService queueService;
+		private XmlService xmlService;
+		private FileSystemService fileService;
+		private DocumentsService documentService;
+
+		public DocumentCollectorService(string outDir, string settingsFile, string clientsFile)
 		{
 			this.outDir = outDir;
 			this.settingsFile = settingsFile;
 
-			if (!Directory.Exists(outDir))
-				Directory.CreateDirectory(outDir);
-
-			this.watcher = new FileSystemWatcher(Path.GetDirectoryName(settingsFile));
-			this.watcher.Filter = Path.GetFileName(settingsFile);
-			this.watcher.Changed += Watcher_Changed;
-
 			this.workThread = new Thread(WorkProcedure);
 			this.stopWorkEvent = new ManualResetEvent(false);
+
+			this.queueService = new ServerQueueService();
+			this.xmlService = new XmlService(clientsFile);
+			this.fileService = new FileSystemService(settingsFile);
+			this.documentService = new DocumentsService(outDir);
 		}
 
 		private void WorkProcedure()
 		{
-			using (MessageQueue documentsQueue = new MessageQueue(DocumentsQueueName))
-			{
-				while (true)
-				{
-					IAsyncResult asyncReceive = documentsQueue.BeginPeek();
-					int res = WaitHandle.WaitAny(new WaitHandle[] { stopWorkEvent, asyncReceive.AsyncWaitHandle });
-					if (res == 0)
-					{
-						break;
-					}
+			ServiceState state = new ServiceState();
 
-					Message message = documentsQueue.EndPeek(asyncReceive);
-					documentsQueue.ReceiveById(message.Id);
-					this.SaveFile(message.BodyStream);
+			ThreadPool.QueueUserWorkItem(this.ProcessSettings, state);
+			ThreadPool.QueueUserWorkItem(this.ListenClients, state);
+
+			this.stopWorkEvent.WaitOne();
+		}
+
+		private void ListenClients(object state)
+		{
+			while (true)
+			{
+				object message = this.queueService.Recieve();
+				if (message is Status)
+				{
+					this.xmlService.SaveStatus(message as Status);
+				}
+				else if (message is Document)
+				{
+					this.documentService.SaveDocument(message as Document);
 				}
 			}
 		}
 
-		private void SaveFile(Stream bodyStream)
+		private void ProcessSettings(object state)
 		{
-			string filePath = Path.Combine(this.outDir, $"{this.fileCounter++}.pdf");
-			using (FileStream fileStream = File.Create(filePath))
-			{
-				bodyStream.Seek(0, SeekOrigin.Begin);
-				bodyStream.CopyTo(fileStream);
-				fileCounter++;
-			}
-		}
-
-		private void Watcher_Changed(object sender, FileSystemEventArgs e)
-		{
-			using (MessageQueue settingsQueue = new MessageQueue("formatname:multicast=234.1.1.1:8001"))
-			{
-				settingsQueue.Send("Multi-pulti");
-			}
+			this.fileService.Start();
 		}
 
 		public void Start()
 		{
 			workThread.Start();
-			this.watcher.EnableRaisingEvents = true;
 		}
 
 		public void Stop()
 		{
-			this.watcher.EnableRaisingEvents = false;
-			stopWorkEvent.Set();
-			workThread.Join();
+			this.stopWorkEvent.Set();
+			this.workThread.Join();
 		}
 	}
 }

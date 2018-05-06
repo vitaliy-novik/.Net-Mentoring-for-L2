@@ -8,33 +8,67 @@ namespace ImageBondingService
 	class ClientQueueService
 	{
 		private const string ServerQueueName = @".\private$\ServerQueue";
-		private const string ClientsQueuesPrefix = @".\private$\ClientsQueues\";
-		private MessagingService messagingService;
-		private bool statusUpdated = false;
+		private const string ClientsQueuesPrefix = @".\private$\ClientQueue";
+		private MessageQueue serverQueue;
+		private MessageQueue clientQueue;
+		private string clientGuid;
+		private const int MaxChunkSize = 3000000;
 
-		public ClientQueueService(string guid)
+		public ClientQueueService(string clientGuid)
 		{
-			this.messagingService = new MessagingService(ServerQueueName, ClientsQueuesPrefix + guid);
+			this.clientGuid = clientGuid;
+
+			if (MessageQueue.Exists(ServerQueueName))
+				this.serverQueue = new MessageQueue(ServerQueueName);
+			else
+				this.serverQueue = MessageQueue.Create(ServerQueueName);
+
+			if (MessageQueue.Exists(ClientsQueuesPrefix))
+				this.clientQueue = new MessageQueue(ClientsQueuesPrefix);
+			else
+				this.clientQueue = MessageQueue.Create(ClientsQueuesPrefix);
+
+			this.clientQueue.Formatter = new XmlMessageFormatter(new Type[] { typeof(Settings) });
 		}
 
-		public void SendDocument(Stream document)
+		public void SendDocument(Stream documentContent)
 		{
-			Message message = new Message();
-			message.BodyStream = document;
-			this.messagingService.SendMessage(document);
-		}
+			int countOfChunks = (int)(documentContent.Length / MaxChunkSize) + 1;
+			string docId = Guid.NewGuid().ToString();
 
-		public void RecieveSettings(Action<ClientStatus> callback)
-		{
-			if (statusUpdated)
+			for (int i = 0; i < countOfChunks; i++)
 			{
-				this.messagingService.RecieveMessage<ClientStatus>(message =>
+				long bytesLeft = documentContent.Length - documentContent.Position;
+				int chunkSize = bytesLeft > MaxChunkSize ? MaxChunkSize : (int)bytesLeft;
+				Document doc = new Document
 				{
-					this.statusUpdated = true;
-					callback((ClientStatus)message.Body);
-				});
+					ClientId = this.clientGuid,
+					DocumentId = docId,
+					CountOfChunks = countOfChunks,
+					ChunkNumber = i,
+					Content = new byte[chunkSize]
+				};
+
+				documentContent.Read(doc.Content, 0, chunkSize);
+				this.serverQueue.Send(doc);
 			}
 		}
 
+		public Settings PeekSettings()
+		{
+			Message message = this.clientQueue.Peek();
+			return message?.Body as Settings;
+		}
+
+		public void SendStatus(ClientStatus clientStatus)
+		{
+			Status status = new Status
+			{
+				ClientId = this.clientGuid,
+				ClientStatus = clientStatus
+			};
+
+			this.serverQueue.Send(status);
+		}
 	}
 }

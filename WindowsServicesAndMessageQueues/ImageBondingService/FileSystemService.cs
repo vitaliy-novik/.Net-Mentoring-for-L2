@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -12,11 +10,13 @@ namespace ImageBondingService
 	{
 		private string inDir;
 		private string outDir;
+		private FileSystemWatcher watcher;
 		private int lastFileNumber = -1;
 		private Regex imageRegex = new Regex(@"^image_\d+.(jpg|png)$");
+		private PdfService pdfService;
 		private ClientQueueService messagingService;
 
-		public FileSystemService(string inDir, string outDir)
+		public FileSystemService(string inDir, string outDir, string serviceGuid)
 		{
 			this.inDir = inDir;
 			this.outDir = outDir;
@@ -26,10 +26,21 @@ namespace ImageBondingService
 
 			if (!Directory.Exists(outDir))
 				Directory.CreateDirectory(outDir);
+
+			this.watcher = new FileSystemWatcher(inDir);
+			this.pdfService = new PdfService();
+			this.messagingService = new ClientQueueService(serviceGuid);
 		}
 
-		public void Run(ServiceState state)
+		public void Start()
 		{
+			this.watcher.Created += ReadFiles;
+			this.watcher.EnableRaisingEvents = true;
+		}
+
+		public void ReadFiles(object sender, FileSystemEventArgs e)
+		{
+			this.messagingService.SendStatus(ClientStatus.Processing);
 			foreach (var file in Directory.EnumerateFiles(inDir).OrderBy(f => f))
 			{
 				string inFile = file;
@@ -38,7 +49,12 @@ namespace ImageBondingService
 
 				if (this.imageRegex.IsMatch(fileName) && this.TryOpen(inFile, 3))
 				{
-					state.DocumentFinished = this.EndDocument(fileName);
+					if (this.EndDocument(fileName))
+					{
+						Stream doc = this.pdfService.GetDocument();
+						this.messagingService.SendDocument(doc);
+					}
+
 					if (File.Exists(outFile))
 					{
 						File.Delete(inFile);
@@ -48,9 +64,11 @@ namespace ImageBondingService
 						File.Move(inFile, outFile);
 					}
 
-					state.NextImage = outFile;
+					this.pdfService.InsetImage(outFile);
 				}
 			}
+
+			this.messagingService.SendStatus(ClientStatus.Waiting);
 		}
 
 		public bool EndDocument(string fileName)
@@ -63,6 +81,7 @@ namespace ImageBondingService
 				return false;
 			}
 
+			this.lastFileNumber = number;
 			return true;
 		}
 

@@ -14,6 +14,7 @@ namespace DocumentQueueService
 			string currentDir = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
 			string outDir = Path.Combine(currentDir, "out");
 			string settingsFile = Path.Combine(currentDir, "settings.txt");
+			string clientsFile = Path.Combine(currentDir, "clients.xml");
 
 			LoggingConfiguration conf = new LoggingConfiguration();
 			FileTarget fileTarget = new FileTarget()
@@ -30,7 +31,7 @@ namespace DocumentQueueService
 			HostFactory.Run(
 				hostConf => hostConf.Service<DocumentCollectorService>(
 					s => {
-						s.ConstructUsing(() => new DocumentCollectorService(outDir, settingsFile));
+						s.ConstructUsing(() => new DocumentCollectorService(outDir, settingsFile, clientsFile));
 						s.WhenStarted(serv => serv.Start());
 						s.WhenStopped(serv => serv.Stop());
 					}).UseNLog(logFactory));

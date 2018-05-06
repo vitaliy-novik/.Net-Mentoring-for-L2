@@ -1,0 +1,7 @@
+﻿namespace DocumentQueueService
+{
+	class ServiceState
+	{
+
+	}
+}

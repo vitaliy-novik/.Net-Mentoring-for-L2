@@ -57,13 +57,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client.cs" />
     <Compile Include="DocumentCollectorService.cs" />
+    <Compile Include="DocumentsService.cs" />
+    <Compile Include="FileSystemService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerQueueService.cs" />
+    <Compile Include="ServiceState.cs" />
+    <Compile Include="XmlService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{C1789D5E-C028-4BAE-BAA6-BF4201057C3C}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

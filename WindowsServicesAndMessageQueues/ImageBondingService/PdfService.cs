@@ -18,27 +18,13 @@ namespace ImageBondingService
 			this.section = this.document.AddSection();
 		}
 
-		public void Run(ServiceState state)
-		{
-			if (state.DocumentFinished)
-			{
-				state.Document = this.GetDocument();
-			}
-
-			if (!string.IsNullOrEmpty(state.NextImage))
-			{
-				this.InsetImage(state.NextImage);
-				state.DocumentFinished = false;
-			}
-		}
-
 		public void InsetImage(string filePath)
 		{
 			Image image = section.AddImage(filePath);
 			//image.Height = document.DefaultPageSetup.PageHeight;
-			image.Width = document.DefaultPageSetup.PageWidth / 2;
+			image.Width = document.DefaultPageSetup.PageWidth;
 
-			section.AddPageBreak();
+			//section.AddPageBreak();
 		}
 
 		public Stream GetDocument()

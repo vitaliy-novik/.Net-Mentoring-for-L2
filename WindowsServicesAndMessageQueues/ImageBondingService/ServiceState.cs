@@ -1,15 +1,9 @@
-﻿using System.IO;
-
-namespace ImageBondingService
+﻿namespace ImageBondingService
 {
 	class ServiceState
 	{
-		public string NextImage;
+		public string ClientGuid { get; set; }
 
 		public ClientStatus Status { get; set; }
-
-		public Stream Document { get; set; }
-
-		public bool DocumentFinished { get; set; }
 	}
 }
