@@ -1,7 +1,8 @@
 ﻿using Common;
+using ImageBondingService.Interfaces;
 using System;
-using System.IO;
 using System.Threading;
+using Unity.Attributes;
 
 namespace ImageBondingService
 {
@@ -11,8 +12,11 @@ namespace ImageBondingService
 
 		private ManualResetEvent stopWorkEvent;
 		private FileSystemService fileSystemService;
-		private ClientQueueService queueService;
+		//private ClientQueueService queueService;
 		private string guid;
+
+		[Dependency]
+		public IClientQueueService queueService { get; set; }
 
 		public ImageBondingService(string inDir, string outDir)
 		{
@@ -20,7 +24,7 @@ namespace ImageBondingService
 			this.workThread = new Thread(WorkProcedure);
 			this.stopWorkEvent = new ManualResetEvent(false);
 			this.fileSystemService = new FileSystemService(inDir, outDir, this.guid);
-			this.queueService = new ClientQueueService(this.guid);
+			//this.queueService = new ClientQueueService(this.guid);
 		}
 
 		private void WorkProcedure(object obj)

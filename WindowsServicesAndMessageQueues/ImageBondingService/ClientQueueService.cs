@@ -1,11 +1,12 @@
 ﻿using Common;
+using ImageBondingService.Interfaces;
 using System;
 using System.IO;
 using System.Messaging;
 
 namespace ImageBondingService
 {
-	class ClientQueueService
+	class ClientQueueService : IClientQueueService
 	{
 		private const string ServerQueueName = @".\private$\ServerQueue";
 		private const string ClientsQueuesPrefix = @".\private$\ClientQueue";

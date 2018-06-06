@@ -1,9 +1,12 @@
-﻿using NLog;
+﻿using ImageBondingService.Interfaces;
+using NLog;
 using NLog.Config;
 using NLog.Targets;
 using System.Diagnostics;
 using System.IO;
 using Topshelf;
+using Unity;
+using Unity.Resolution;
 
 namespace ImageBondingService
 {
@@ -27,10 +30,20 @@ namespace ImageBondingService
 
 			var logFactory = new LogFactory(conf);
 
+
+			IUnityContainer unityContainer = new UnityContainer();
+			unityContainer.RegisterType<IClientQueueService, ClientQueueService>();
+			ImageBondingService service = unityContainer.Resolve<ImageBondingService>(
+				new ResolverOverride[]
+				{
+					new ParameterOverride("inDir", inDir),
+					new ParameterOverride("outDir", outDir)
+				});
+
 			HostFactory.Run(
 				hostConf => hostConf.Service<ImageBondingService>(
 					s => {
-						s.ConstructUsing(() => new ImageBondingService(inDir, outDir));
+						s.ConstructUsing(() => service);
 						s.WhenStarted(serv => serv.Start());
 						s.WhenStopped(serv => serv.Stop());
 					}).UseNLog(logFactory));
