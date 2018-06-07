@@ -1,4 +1,5 @@
 ﻿using Common;
+using ImageBondingService.AOP;
 using ImageBondingService.Interfaces;
 using System;
 using System.IO;
@@ -6,7 +7,7 @@ using System.Messaging;
 
 namespace ImageBondingService
 {
-	class ClientQueueService : IClientQueueService
+	public class ClientQueueService : IClientQueueService
 	{
 		private const string ServerQueueName = @".\private$\ServerQueue";
 		private const string ClientsQueuesPrefix = @".\private$\ClientQueue";
@@ -32,6 +33,7 @@ namespace ImageBondingService
 			this.clientQueue.Formatter = new XmlMessageFormatter(new Type[] { typeof(Settings) });
 		}
 
+		[PostsharpAspect]
 		public void SendDocument(Stream documentContent)
 		{
 			int countOfChunks = (int)(documentContent.Length / MaxChunkSize) + 1;

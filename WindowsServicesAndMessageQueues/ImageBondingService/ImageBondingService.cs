@@ -18,9 +18,9 @@ namespace ImageBondingService
 		[Dependency]
 		public IClientQueueService queueService { get; set; }
 
-		public ImageBondingService(string inDir, string outDir)
+		public ImageBondingService(string inDir, string outDir, string clientGuid)
 		{
-			this.guid = Guid.NewGuid().ToString();
+			this.guid = clientGuid;
 			this.workThread = new Thread(WorkProcedure);
 			this.stopWorkEvent = new ManualResetEvent(false);
 			this.fileSystemService = new FileSystemService(inDir, outDir, this.guid);

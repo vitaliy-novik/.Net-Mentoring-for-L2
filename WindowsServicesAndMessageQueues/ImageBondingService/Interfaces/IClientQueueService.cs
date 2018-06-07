@@ -3,7 +3,7 @@ using System.IO;
 
 namespace ImageBondingService.Interfaces
 {
-	interface IClientQueueService
+	public interface IClientQueueService
 	{
 		void SendDocument(Stream documentContent);
 

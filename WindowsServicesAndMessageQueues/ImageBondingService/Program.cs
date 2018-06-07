@@ -1,11 +1,16 @@
-﻿using ImageBondingService.Interfaces;
+﻿using Castle.DynamicProxy;
+using ImageBondingService.AOP;
+using ImageBondingService.Interfaces;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
+using System;
 using System.Diagnostics;
 using System.IO;
 using Topshelf;
 using Unity;
+using Unity.Injection;
+using Unity.Registration;
 using Unity.Resolution;
 
 namespace ImageBondingService
@@ -17,6 +22,7 @@ namespace ImageBondingService
 			var currentDir = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
 			var inDir = Path.Combine(currentDir, "in");
 			var outDir = Path.Combine(currentDir, "out");
+			var clientGuid = Guid.NewGuid().ToString();
 
 			var conf = new LoggingConfiguration();
 			var fileTarget = new FileTarget()
@@ -32,12 +38,19 @@ namespace ImageBondingService
 
 
 			IUnityContainer unityContainer = new UnityContainer();
-			unityContainer.RegisterType<IClientQueueService, ClientQueueService>();
+			ProxyGenerator generator = new ProxyGenerator();
+			IClientQueueService queueService = 
+				generator.CreateInterfaceProxyWithTarget<IClientQueueService>(
+					new ClientQueueService(clientGuid), new CastleInterceptor());
+			unityContainer.RegisterInstance<IClientQueueService>(queueService);
+			//unityContainer.RegisterType<IClientQueueService, ClientQueueService>(
+			//	 new InjectionConstructor(clientGuid));
 			ImageBondingService service = unityContainer.Resolve<ImageBondingService>(
 				new ResolverOverride[]
 				{
 					new ParameterOverride("inDir", inDir),
-					new ParameterOverride("outDir", outDir)
+					new ParameterOverride("outDir", outDir),
+					new ParameterOverride("clientGuid", clientGuid)
 				});
 
 			HostFactory.Run(
