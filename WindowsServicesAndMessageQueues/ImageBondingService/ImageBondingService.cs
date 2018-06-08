@@ -11,9 +11,12 @@ namespace ImageBondingService
 		private Thread workThread;
 
 		private ManualResetEvent stopWorkEvent;
-		private FileSystemService fileSystemService;
+		//private FileSystemService fileSystemService;
 		//private ClientQueueService queueService;
 		private string guid;
+
+		[Dependency]
+		public IFileSystemService fileSystemService { get; set; }
 
 		[Dependency]
 		public IClientQueueService queueService { get; set; }
@@ -23,7 +26,7 @@ namespace ImageBondingService
 			this.guid = clientGuid;
 			this.workThread = new Thread(WorkProcedure);
 			this.stopWorkEvent = new ManualResetEvent(false);
-			this.fileSystemService = new FileSystemService(inDir, outDir, this.guid);
+			//this.fileSystemService = new FileSystemService(inDir, outDir, this.guid);
 			//this.queueService = new ClientQueueService(this.guid);
 		}
 

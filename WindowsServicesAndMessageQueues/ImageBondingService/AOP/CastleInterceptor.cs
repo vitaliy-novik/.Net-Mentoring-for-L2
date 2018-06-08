@@ -1,4 +1,5 @@
 ﻿using Castle.DynamicProxy;
+using ImageBondingService.Logging;
 using System;
 
 namespace ImageBondingService.AOP
@@ -7,9 +8,9 @@ namespace ImageBondingService.AOP
 	{
 		public void Intercept(IInvocation invocation)
 		{
-			Console.Write("Calling: " + invocation.Method.Name + "\n");
+			Logger.LogCall(invocation.Method, invocation.Arguments);
 			invocation.Proceed();
-			Console.Write("Exiting: " + invocation.Method.Name + "\n");
+			Logger.LogRet(invocation.Method, invocation.ReturnValue);
 		}
 
 	}

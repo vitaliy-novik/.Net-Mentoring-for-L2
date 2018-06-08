@@ -1,12 +1,14 @@
-﻿using System;
+﻿using ImageBondingService.Interfaces;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Unity.Attributes;
 
 namespace ImageBondingService
 {
-	class FileSystemService
+	public class FileSystemService : IFileSystemService
 	{
 		private string inDir;
 		private string outDir;
@@ -14,7 +16,9 @@ namespace ImageBondingService
 		private int lastFileNumber = -1;
 		private Regex imageRegex = new Regex(@"^image_\d+.(jpg|png)$");
 		private PdfService pdfService;
-		private ClientQueueService messagingService;
+
+		[Dependency]
+		public ClientQueueService messagingService { get; set; }
 
 		public FileSystemService(string inDir, string outDir, string serviceGuid)
 		{
@@ -29,7 +33,7 @@ namespace ImageBondingService
 
 			this.watcher = new FileSystemWatcher(inDir);
 			this.pdfService = new PdfService();
-			this.messagingService = new ClientQueueService(serviceGuid);
+			//this.messagingService = new ClientQueueService(serviceGuid);
 		}
 
 		public void Start()

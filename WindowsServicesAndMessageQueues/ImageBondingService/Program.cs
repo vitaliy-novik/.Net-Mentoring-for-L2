@@ -43,6 +43,8 @@ namespace ImageBondingService
 				generator.CreateInterfaceProxyWithTarget<IClientQueueService>(
 					new ClientQueueService(clientGuid), new CastleInterceptor());
 			unityContainer.RegisterInstance<IClientQueueService>(queueService);
+			unityContainer.RegisterType<IFileSystemService, FileSystemService>(
+				new InjectionConstructor(inDir, outDir, clientGuid));
 			//unityContainer.RegisterType<IClientQueueService, ClientQueueService>(
 			//	 new InjectionConstructor(clientGuid));
 			ImageBondingService service = unityContainer.Resolve<ImageBondingService>(
