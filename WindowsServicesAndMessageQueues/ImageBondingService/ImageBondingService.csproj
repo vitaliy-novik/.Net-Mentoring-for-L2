@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="AOP\CastleInterceptor.cs" />
     <Compile Include="AOP\PostsharpAspect.cs" />
+    <Compile Include="AOP\UnityExtension.cs" />
     <Compile Include="AOP\UnityInterceptor.cs" />
     <Compile Include="FileSystemService.cs" />
     <Compile Include="ImageBondingService.cs" />

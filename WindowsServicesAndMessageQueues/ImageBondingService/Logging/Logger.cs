@@ -9,11 +9,11 @@ namespace ImageBondingService.Logging
 {
 	static class Logger
 	{
+		private static object lockObj = new object();
 
 		public static void LogCall(MethodBase method, object[] args)
 		{
-			StringBuilder sb = new StringBuilder();
-			using (XmlWriter writer = XmlWriter.Create(sb))
+			Log(writer =>
 			{
 				writer.WriteStartElement("call");
 				writer.WriteAttributeString("time", DateTime.Now.ToString());
@@ -28,24 +28,40 @@ namespace ImageBondingService.Logging
 				}
 
 				writer.WriteEndElement();
-			}
-
-			Commit(sb.ToString());
+			});
 		}
 
 		public static void LogRet(MethodInfo method, object returnValue)
 		{
-			StringBuilder sb = new StringBuilder();
-			using (XmlWriter writer = XmlWriter.Create(sb))
+			Log(writer =>
 			{
 				writer.WriteStartElement("return");
 				writer.WriteAttributeString("time", DateTime.Now.ToString());
 				writer.WriteAttributeString("name", method.Name);
 
-				XmlSerializer serializer = new XmlSerializer(method.ReturnType);
-				serializer.Serialize(writer, returnValue);
+				if (method.ReturnType.Equals(typeof(void)))
+				{
+					writer.WriteString("void");
+				}
+				else
+				{
+					XmlSerializer serializer = new XmlSerializer(method.ReturnType);
+					serializer.Serialize(writer, returnValue);
+				}
 
 				writer.WriteEndElement();
+			});
+		}
+
+		private static void Log(Action<XmlWriter> action)
+		{
+			StringBuilder sb = new StringBuilder();
+			XmlWriterSettings settings = new XmlWriterSettings();
+			settings.OmitXmlDeclaration = true;
+			settings.ConformanceLevel = ConformanceLevel.Fragment;
+			using (XmlWriter writer = XmlWriter.Create(sb, settings))
+			{
+				action(writer);
 			}
 
 			Commit(sb.ToString());
@@ -53,9 +69,12 @@ namespace ImageBondingService.Logging
 
 		private static void Commit(string log)
 		{
-			using (StreamWriter sw = File.AppendText("logs.xml"))
+			lock (lockObj)
 			{
-				sw.WriteLine(log);
+				using (StreamWriter sw = File.AppendText("logs.xml"))
+				{
+					sw.WriteLine(log);
+				}
 			}
 		}
 	}

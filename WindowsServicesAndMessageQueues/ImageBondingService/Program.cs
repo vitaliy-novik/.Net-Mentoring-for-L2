@@ -1,5 +1,4 @@
-﻿using Castle.DynamicProxy;
-using ImageBondingService.AOP;
+﻿using ImageBondingService.AOP;
 using ImageBondingService.Interfaces;
 using NLog;
 using NLog.Config;
@@ -10,7 +9,6 @@ using System.IO;
 using Topshelf;
 using Unity;
 using Unity.Injection;
-using Unity.Registration;
 using Unity.Resolution;
 
 namespace ImageBondingService
@@ -38,15 +36,13 @@ namespace ImageBondingService
 
 
 			IUnityContainer unityContainer = new UnityContainer();
-			ProxyGenerator generator = new ProxyGenerator();
-			IClientQueueService queueService = 
-				generator.CreateInterfaceProxyWithTarget<IClientQueueService>(
-					new ClientQueueService(clientGuid), new CastleInterceptor());
-			unityContainer.RegisterInstance<IClientQueueService>(queueService);
+			unityContainer.AddNewExtension<UnityExtension>();
+
+			unityContainer.RegisterType<IClientQueueService, ClientQueueService>(
+				new InjectionConstructor(clientGuid));
 			unityContainer.RegisterType<IFileSystemService, FileSystemService>(
 				new InjectionConstructor(inDir, outDir, clientGuid));
-			//unityContainer.RegisterType<IClientQueueService, ClientQueueService>(
-			//	 new InjectionConstructor(clientGuid));
+
 			ImageBondingService service = unityContainer.Resolve<ImageBondingService>(
 				new ResolverOverride[]
 				{

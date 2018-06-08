@@ -6,7 +6,7 @@ using Unity.Attributes;
 
 namespace ImageBondingService
 {
-	class ImageBondingService
+	public class ImageBondingService
 	{
 		private Thread workThread;
 
