@@ -38,6 +38,7 @@ namespace ImageBondingService
 			IUnityContainer unityContainer = new UnityContainer();
 			unityContainer.AddNewExtension<UnityExtension>();
 
+			unityContainer.RegisterType<IPdfService, PdfService>();
 			unityContainer.RegisterType<IClientQueueService, ClientQueueService>(
 				new InjectionConstructor(clientGuid));
 			unityContainer.RegisterType<IFileSystemService, FileSystemService>(

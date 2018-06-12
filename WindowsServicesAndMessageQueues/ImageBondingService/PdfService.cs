@@ -1,11 +1,12 @@
-﻿using MigraDoc.DocumentObjectModel;
+﻿using ImageBondingService.Interfaces;
+using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Shapes;
 using MigraDoc.Rendering;
 using System.IO;
 
 namespace ImageBondingService
 {
-	class PdfService
+	public class PdfService : IPdfService
 	{
 		private PdfDocumentRenderer renderer;
 		private Document document;

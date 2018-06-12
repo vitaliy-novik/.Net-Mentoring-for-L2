@@ -116,6 +116,7 @@
     <Compile Include="ClientQueueService.cs" />
     <Compile Include="Interfaces\IClientQueueService.cs" />
     <Compile Include="Interfaces\IFileSystemService.cs" />
+    <Compile Include="Interfaces\IPdfService.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="PdfService.cs" />
     <Compile Include="Program.cs" />
