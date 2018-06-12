@@ -9,17 +9,14 @@ namespace ImageBondingService
 	public class ImageBondingService
 	{
 		private Thread workThread;
-
 		private ManualResetEvent stopWorkEvent;
-		//private FileSystemService fileSystemService;
-		//private ClientQueueService queueService;
 		private string guid;
 
 		[Dependency]
-		public IFileSystemService fileSystemService { get; set; }
+		public IFileSystemService FileSystemService { get; set; }
 
 		[Dependency]
-		public IClientQueueService queueService { get; set; }
+		public IClientQueueService QueueService { get; set; }
 
 		public ImageBondingService(string inDir, string outDir, string clientGuid)
 		{
@@ -47,7 +44,7 @@ namespace ImageBondingService
 		{
 			while (true)
 			{
-				Settings settings = this.queueService.PeekSettings();
+				Settings settings = this.QueueService.PeekSettings();
 				if (settings != null)
 				{
 					Thread.Sleep(settings.Timeout);
@@ -57,7 +54,7 @@ namespace ImageBondingService
 
 		private void ProcessImages(object state)
 		{
-			this.fileSystemService.Start();
+			this.FileSystemService.Start();
 		}
 
 		public void Start()

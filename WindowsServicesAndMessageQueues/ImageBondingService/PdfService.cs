@@ -22,10 +22,7 @@ namespace ImageBondingService
 		public void InsetImage(string filePath)
 		{
 			Image image = section.AddImage(filePath);
-			//image.Height = document.DefaultPageSetup.PageHeight;
 			image.Width = document.DefaultPageSetup.PageWidth;
-
-			//section.AddPageBreak();
 		}
 
 		public Stream GetDocument()

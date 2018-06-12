@@ -22,8 +22,7 @@ namespace ImageBondingService.Logging
 				foreach (ParameterInfo param in method.GetParameters())
 				{
 					writer.WriteStartElement(param.Name);
-					XmlSerializer serializer = new XmlSerializer(param.ParameterType);
-					serializer.Serialize(writer, args[param.Position]);
+					Serialize(writer, args[param.Position], param.ParameterType);
 					writer.WriteEndElement();
 				}
 
@@ -45,12 +44,24 @@ namespace ImageBondingService.Logging
 				}
 				else
 				{
-					XmlSerializer serializer = new XmlSerializer(method.ReturnType);
-					serializer.Serialize(writer, returnValue);
+					Serialize(writer, returnValue, method.ReturnType);
 				}
 
 				writer.WriteEndElement();
 			});
+		}
+
+		private static void Serialize(XmlWriter xmlWriter, object obj, Type type)
+		{
+			XmlSerializer serializer = new XmlSerializer(type);
+			try
+			{
+				serializer.Serialize(xmlWriter, obj);
+			}
+			catch (InvalidOperationException)
+			{
+				xmlWriter.WriteString("Not serializable");
+			}
 		}
 
 		private static void Log(Action<XmlWriter> action)

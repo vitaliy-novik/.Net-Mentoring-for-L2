@@ -15,10 +15,12 @@ namespace ImageBondingService
 		private FileSystemWatcher watcher;
 		private int lastFileNumber = -1;
 		private Regex imageRegex = new Regex(@"^image_\d+.(jpg|png)$");
-		private PdfService pdfService;
 
 		[Dependency]
-		public ClientQueueService messagingService { get; set; }
+		public IClientQueueService MessagingService { get; set; }
+
+		[Dependency]
+		public IPdfService PdfService { get; set; }
 
 		public FileSystemService(string inDir, string outDir, string serviceGuid)
 		{
@@ -32,7 +34,7 @@ namespace ImageBondingService
 				Directory.CreateDirectory(outDir);
 
 			this.watcher = new FileSystemWatcher(inDir);
-			this.pdfService = new PdfService();
+			this.PdfService = new PdfService();
 			//this.messagingService = new ClientQueueService(serviceGuid);
 		}
 
@@ -44,7 +46,7 @@ namespace ImageBondingService
 
 		public void ReadFiles(object sender, FileSystemEventArgs e)
 		{
-			this.messagingService.SendStatus(ClientStatus.Processing);
+			this.MessagingService.SendStatus(ClientStatus.Processing);
 			foreach (var file in Directory.EnumerateFiles(inDir).OrderBy(f => f))
 			{
 				string inFile = file;
@@ -55,8 +57,8 @@ namespace ImageBondingService
 				{
 					if (this.EndDocument(fileName))
 					{
-						Stream doc = this.pdfService.GetDocument();
-						this.messagingService.SendDocument(doc);
+						Stream doc = this.PdfService.GetDocument();
+						this.MessagingService.SendDocument(doc);
 					}
 
 					if (File.Exists(outFile))
@@ -68,11 +70,11 @@ namespace ImageBondingService
 						File.Move(inFile, outFile);
 					}
 
-					this.pdfService.InsetImage(outFile);
+					this.PdfService.InsetImage(outFile);
 				}
 			}
 
-			this.messagingService.SendStatus(ClientStatus.Waiting);
+			this.MessagingService.SendStatus(ClientStatus.Waiting);
 		}
 
 		public bool EndDocument(string fileName)
